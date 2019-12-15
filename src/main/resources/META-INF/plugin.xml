@@ -1,0 +1,21 @@
+<idea-plugin>
+    <id>cn.xunyard.doc-builder</id>
+    <name>Service Doc Builder</name>
+    <vendor email="xunyard@gmail.com" url="https://blog.xunyard.cn">xunyard</vendor>
+
+    <description><![CDATA[A simple tool to build service document for some kinds of facade]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <actions>
+
+        <action id="cn.xunyard.doc" class="cn.xunyard.idea.doc.action.ServiceDocBuildingAction" text="Build Service Doc"
+                description="A simple tool for service document building.">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+        </action>
+    </actions>
+</idea-plugin>
