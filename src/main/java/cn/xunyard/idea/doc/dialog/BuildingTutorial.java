@@ -4,7 +4,7 @@
 
 package cn.xunyard.idea.doc.dialog;
 
-import cn.xunyard.idea.doc.logic.ServiceDocBuildingService;
+import cn.xunyard.idea.doc.logic.DocBuildingContext;
 import cn.xunyard.idea.util.ProjectUtils;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
@@ -20,11 +20,12 @@ import java.awt.event.ActionEvent;
  */
 public class BuildingTutorial extends JPanel {
 
-    private String outputDirectoryParam;
-
     public BuildingTutorial() {
         initComponents();
-        printLog("等待选定输出目录...");
+    }
+
+    public DocBuildingContext getDocBuildingContext() {
+        return new DocBuildingContext(suffixMatch.getText(), prefixMatch.getText(), outputDirectory.getText());
     }
 
     private void suffixCheckBoxActionPerformed(ActionEvent e) {
@@ -40,27 +41,8 @@ public class BuildingTutorial extends JPanel {
                 ProjectUtils.getCurrentProject(), null);
 
         if (virtualFile != null) {
-            outputDirectoryParam = virtualFile.getPath();
-            outputDirectory.setText(outputDirectoryParam);
-            printLog("选择输出目录:" + outputDirectoryParam);
-            executeButton.setEnabled(true);
+            outputDirectory.setText(virtualFile.getPath());
         }
-    }
-
-    private void printLog(String log) {
-        String str = processOutputArea.getText() + log + "\n";
-        processOutputArea.setText(str);
-    }
-
-    private void executeButtonActionPerformed(ActionEvent e) {
-        executeButton.setEnabled(false);
-        ServiceDocBuildingService service = new ServiceDocBuildingService(suffixMatch.getText(), prefixMatch.getText(), this::printLog);
-        service.run(ProjectUtils.getCurrentProject().getBasePath());
-        executeButton.setEnabled(true);
-    }
-
-    private void clearLogActionPerformed(ActionEvent e) {
-        processOutputArea.setText("");
     }
 
     private void initComponents() {
@@ -84,19 +66,23 @@ public class BuildingTutorial extends JPanel {
         outputButton = new JButton();
         outputDirectory = new JLabel();
         checkBox1 = new JCheckBox();
-        panel2 = new JPanel();
-        label5 = new JLabel();
-        label6 = new JLabel();
-        panel3 = new JPanel();
-        scrollPane1 = new JScrollPane();
-        processOutputArea = new JTextArea();
-        clearLog = new JButton();
-        executeButton = new JButton();
 
         //======== this ========
         setMinimumSize(null);
         setPreferredSize(new Dimension(800, 400));
         setMaximumSize(null);
+        setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.TitledBorder(new javax.swing.
+                border.EmptyBorder(0, 0, 0, 0), "JF\u006frm\u0044es\u0069gn\u0065r \u0045va\u006cua\u0074io\u006e", javax.swing.border.TitledBorder.CENTER
+                , javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("D\u0069al\u006fg", java.awt.Font
+                .BOLD, 12), java.awt.Color.red), getBorder()));
+        addPropertyChangeListener(
+                new java.beans.PropertyChangeListener() {
+                    @Override
+                    public void propertyChange(java.beans.PropertyChangeEvent e) {
+                        if ("\u0062or\u0064er"
+                                .equals(e.getPropertyName())) throw new RuntimeException();
+                    }
+                });
         setLayout(new VerticalLayout());
 
         //======== panel1 ========
@@ -202,57 +188,6 @@ public class BuildingTutorial extends JPanel {
         checkBox1.setText("\u4fdd\u5b58json\u6587\u4ef6\uff08\u6682\u4e0d\u53ef\u7528\uff09");
         checkBox1.setEnabled(false);
         add(checkBox1);
-
-        //======== panel2 ========
-        {
-            panel2.setLayout(new FlowLayout(FlowLayout.LEFT));
-
-            //---- label5 ----
-            label5.setText("\u6267\u884c&\u8f93\u51fa");
-            panel2.add(label5);
-
-            //---- label6 ----
-            label6.setText("-------------------");
-            panel2.add(label6);
-        }
-        add(panel2);
-
-        //======== panel3 ========
-        {
-            panel3.setLayout(new GridBagLayout());
-            ((GridBagLayout) panel3.getLayout()).columnWidths = new int[]{705, 0, 0};
-            ((GridBagLayout) panel3.getLayout()).rowHeights = new int[]{137, 0, 0, 0};
-            ((GridBagLayout) panel3.getLayout()).columnWeights = new double[]{0.0, 0.0, 1.0E-4};
-            ((GridBagLayout) panel3.getLayout()).rowWeights = new double[]{0.0, 0.0, 0.0, 1.0E-4};
-
-            //======== scrollPane1 ========
-            {
-
-                //---- processOutputArea ----
-                processOutputArea.setLineWrap(true);
-                processOutputArea.setEditable(false);
-                scrollPane1.setViewportView(processOutputArea);
-            }
-            panel3.add(scrollPane1, new GridBagConstraints(0, 0, 1, 3, 0.0, 0.0,
-                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                    new Insets(0, 0, 0, 5), 0, 0));
-
-            //---- clearLog ----
-            clearLog.setText("\u6e05\u9664\u65e5\u5fd7");
-            clearLog.addActionListener(e -> clearLogActionPerformed(e));
-            panel3.add(clearLog, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
-                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                    new Insets(0, 0, 5, 0), 0, 0));
-
-            //---- executeButton ----
-            executeButton.setText("\u6267\u884c!");
-            executeButton.setEnabled(false);
-            executeButton.addActionListener(e -> executeButtonActionPerformed(e));
-            panel3.add(executeButton, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0,
-                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                    new Insets(0, 0, 0, 0), 0, 0));
-        }
-        add(panel3);
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
@@ -276,13 +211,5 @@ public class BuildingTutorial extends JPanel {
     private JButton outputButton;
     private JLabel outputDirectory;
     private JCheckBox checkBox1;
-    private JPanel panel2;
-    private JLabel label5;
-    private JLabel label6;
-    private JPanel panel3;
-    private JScrollPane scrollPane1;
-    private JTextArea processOutputArea;
-    private JButton clearLog;
-    private JButton executeButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

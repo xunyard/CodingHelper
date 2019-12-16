@@ -1,16 +1,17 @@
 package cn.xunyard.idea.doc.logic;
 
 import cn.xunyard.idea.util.AssertUtils;
-import cn.xunyard.idea.util.LogCallback;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaSource;
-import io.swagger.annotations.Api;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
@@ -19,13 +20,11 @@ import java.util.*;
 public class ServiceResolver {
 
     private final Set<String> servicePathSet;
-    private final LogCallback logCallback;
     private final Map<String, ServiceDescriber> serviceDescriberMap;
     private final Map<String, BeanDescriber> beanDescriberMap;
 
-    public ServiceResolver(Set<String> servicePathSet, LogCallback logCallback) {
+    public ServiceResolver(Set<String> servicePathSet) {
         this.servicePathSet = servicePathSet;
-        this.logCallback = logCallback;
         serviceDescriberMap = new HashMap<>();
         beanDescriberMap = new HashMap<>();
     }

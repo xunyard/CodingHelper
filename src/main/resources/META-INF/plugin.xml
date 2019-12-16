@@ -8,7 +8,10 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
+        <toolWindow id="Doc Generator"
+                    anchor="bottom"
+                    factoryClass="cn.xunyard.idea.doc.window.ServiceDocGeneratorToolWindowFactory">
+        </toolWindow>
     </extensions>
 
     <actions>

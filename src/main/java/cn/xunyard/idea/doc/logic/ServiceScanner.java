@@ -1,6 +1,6 @@
 package cn.xunyard.idea.doc.logic;
 
-import cn.xunyard.idea.util.LogCallback;
+import cn.xunyard.idea.doc.DocLogger;
 import com.google.common.base.Joiner;
 
 import java.io.File;
@@ -16,18 +16,13 @@ public class ServiceScanner {
     private final String serviceSuffix;
     private final String packagePrefix;
 
-
-    private final LogCallback logCallback;
-
     private final Set<String> scannedServiceJavaPathSet;
 
     public ServiceScanner(String serviceSuffixParam,
-                          String packagePrefixParam,
-                          LogCallback logCallback) {
+                          String packagePrefixParam) {
         this.serviceSuffix = wrapService(serviceSuffixParam);
         this.packagePrefix = wrapPackage(packagePrefixParam);
 
-        this.logCallback = logCallback;
         this.scannedServiceJavaPathSet = new HashSet<>();
     }
 
@@ -52,9 +47,9 @@ public class ServiceScanner {
     }
 
     public Set<String> scan(String basePath) {
-        logCallback.log("开始扫描服务类...");
+        DocLogger.info("开始扫描服务类...");
         scanPath(basePath);
-        logCallback.log(String.format("扫描完成!共发现%d个服务", scannedServiceJavaPathSet.size()));
+        DocLogger.info(String.format("扫描完成!共发现%d个服务", scannedServiceJavaPathSet.size()));
         return scannedServiceJavaPathSet;
     }
 
@@ -73,7 +68,7 @@ public class ServiceScanner {
             }
         } else {
             if (!file.exists()) {
-                logCallback.log("检测到无效文件地址:" + path);
+                DocLogger.error("检测到无效文件地址:" + path);
                 throw new IllegalArgumentException("invalid.file.path");
             }
 
@@ -91,7 +86,7 @@ public class ServiceScanner {
                 }
 
                 scannedServiceJavaPathSet.add(path);
-                logCallback.log("发现服务:" + packagePath + "/" + className);
+                DocLogger.debug("发现服务:" + packagePath + "/" + className);
             }
         }
     }

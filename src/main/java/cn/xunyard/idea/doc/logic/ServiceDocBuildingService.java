@@ -1,7 +1,5 @@
 package cn.xunyard.idea.doc.logic;
 
-import cn.xunyard.idea.util.LogCallback;
-
 import java.util.Set;
 
 /**
@@ -10,19 +8,18 @@ import java.util.Set;
  */
 public class ServiceDocBuildingService {
 
-    private final ServiceScanner serviceScanner;
-    private final LogCallback logCallback;
+    private final DocBuildingContext docBuildingContext;
 
-    public ServiceDocBuildingService(String serviceSuffix,
-                                     String packagePrefix,
-                                     LogCallback logCallback) {
-        serviceScanner = new ServiceScanner(serviceSuffix, packagePrefix, logCallback);
-        this.logCallback = logCallback;
+    public ServiceDocBuildingService(DocBuildingContext docBuildingContext) {
+        this.docBuildingContext = docBuildingContext;
     }
 
     public void run(String basePath) {
+        ServiceScanner serviceScanner = new ServiceScanner(docBuildingContext.getServiceSuffix(),
+                docBuildingContext.getPackagePrefix());
+
         Set<String> srcPathSet = serviceScanner.scan(basePath);
-        ServiceResolver serviceResolver = new ServiceResolver(srcPathSet, logCallback);
+        ServiceResolver serviceResolver = new ServiceResolver(srcPathSet);
         serviceResolver.run();
     }
 
