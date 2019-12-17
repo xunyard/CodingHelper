@@ -1,16 +1,16 @@
 package cn.xunyard.idea.doc.logic;
 
+import cn.xunyard.idea.doc.logic.describer.BeanDescriberManager;
+import cn.xunyard.idea.doc.logic.describer.ServiceDescriber;
 import cn.xunyard.idea.util.AssertUtils;
 import com.thoughtworks.qdox.JavaProjectBuilder;
-import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaSource;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -20,13 +20,10 @@ import java.util.Set;
 public class ServiceResolver {
 
     private final Set<String> servicePathSet;
-    private final Map<String, ServiceDescriber> serviceDescriberMap;
-    private final Map<String, BeanDescriber> beanDescriberMap;
+    private List<ServiceDescriber> serviceDescriberList;
 
     public ServiceResolver(Set<String> servicePathSet) {
         this.servicePathSet = servicePathSet;
-        serviceDescriberMap = new HashMap<>();
-        beanDescriberMap = new HashMap<>();
     }
 
     public void run() {
@@ -34,7 +31,9 @@ public class ServiceResolver {
             return;
         }
 
+        BeanDescriberManager.getInstance().clear();
         JavaProjectBuilder javaProjectBuilder = new JavaProjectBuilder();
+        serviceDescriberList = new LinkedList<>();
         for (String srcPath : servicePathSet) {
             resolve(javaProjectBuilder, srcPath);
         }
@@ -43,9 +42,7 @@ public class ServiceResolver {
     private void resolve(JavaProjectBuilder builder, String srcPath) {
         try {
             JavaSource javaSource = builder.addSource(new File(srcPath));
-
-            List<JavaClass> classes = javaSource.getClasses();
-            for (JavaClass javaClass : classes) {
+            for (JavaClass javaClass : javaSource.getClasses()) {
                 resolveServiceClass(javaClass);
             }
 
@@ -55,7 +52,6 @@ public class ServiceResolver {
     }
 
     private void resolveServiceClass(JavaClass javaClass) {
-
-        List<JavaAnnotation> annotations = javaClass.getAnnotations();
+        serviceDescriberList.add(ServiceDescriber.fromJavaClass(javaClass));
     }
 }

@@ -6,6 +6,7 @@ import com.google.common.base.Joiner;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.jar.JarFile;
 
 /**
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
