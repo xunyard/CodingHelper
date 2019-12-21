@@ -1,5 +1,7 @@
 package cn.xunyard.idea.doc.logic.describer;
 
+import cn.xunyard.idea.doc.DocLogger;
+import cn.xunyard.idea.doc.logic.DocBuildingContext;
 import cn.xunyard.idea.util.AssertUtils;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
@@ -14,15 +16,17 @@ import java.util.List;
  * @date 2019-12-15
  */
 public class ServiceDescriber {
+    private final DocBuildingContext docBuildingContext;
 
     private Api api;
     private List<MethodDescriber> methodDescriberList;
 
-    public static ServiceDescriber fromJavaClass(JavaClass javaClass) {
-        return new ServiceDescriber(javaClass);
+    public static ServiceDescriber fromJavaClass(JavaClass javaClass, DocBuildingContext docBuildingContext) {
+        return new ServiceDescriber(javaClass, docBuildingContext);
     }
 
-    private ServiceDescriber(JavaClass javaClass) {
+    private ServiceDescriber(JavaClass javaClass, DocBuildingContext docBuildingContext) {
+        this.docBuildingContext = docBuildingContext;
         resolveRoot(javaClass);
         resolveMethod(javaClass);
     }
@@ -30,26 +34,31 @@ public class ServiceDescriber {
     private void resolveRoot(JavaClass javaClass) {
         List<JavaAnnotation> annotationList = javaClass.getAnnotations();
         for (JavaAnnotation annotation : annotationList) {
-            Api api = Api.fromAnnotation(annotation);
+            this.api = Api.fromAnnotation(annotation);
 
-            if (api != null) {
-                this.api = api;
+            if (this.api != null) {
+                return;
             }
         }
 
         String comment = javaClass.getComment();
 
-        if (AssertUtils.isEmpty(comment)) {
+        if (!AssertUtils.isEmpty(comment)) {
             this.api = new Api(javaClass.getName(), null);
-        } else {
-            // TODO 解析comment内容
+            return;
         }
+
+        DocLogger.error("服务: " + javaClass.getName() + " 未找到有效注释");
     }
 
     private void resolveMethod(JavaClass javaClass) {
         methodDescriberList = new LinkedList<>();
         for (JavaMethod javaMethod : javaClass.getMethods()) {
-            methodDescriberList.add(MethodDescriber.fromJavaMethod(javaMethod));
+            if (AssertUtils.isEmpty(javaMethod.getParameters())) {
+                DocLogger.warn(javaClass.getName() + "." + javaMethod.getName() + "未找到参数");
+            } else {
+                methodDescriberList.add(MethodDescriber.fromJavaMethod(javaClass, javaMethod, docBuildingContext));
+            }
         }
     }
 
@@ -69,36 +78,11 @@ public class ServiceDescriber {
         }
 
         private static Api fromAnnotation(JavaAnnotation annotation) {
-            if (!NAME.equals(annotation.getType().getName())) {
+            if (!NAME.equals(annotation.getType().getFullyQualifiedName())) {
                 return null;
             }
 
             return new Api(annotation.getProperty("value").toString(), null);
-        }
-    }
-
-    /**
-     * @see io.swagger.annotations.ApiOperation
-     */
-    @Getter
-    private static class ApiOperation {
-        private static final String NAME = "io.swagger.annotations.ApiOperation";
-
-        private final String value;
-        private final String note;
-
-        private ApiOperation(String value, String note) {
-            this.value = value;
-            this.note = note;
-        }
-
-        private static ApiOperation fromAnnotation(JavaAnnotation annotation) {
-            if (!NAME.equals(annotation.getType().getName())) {
-                return null;
-            }
-
-            return new ApiOperation(annotation.getProperty("value").toString(),
-                    annotation.getProperty("note").toString());
         }
     }
 }

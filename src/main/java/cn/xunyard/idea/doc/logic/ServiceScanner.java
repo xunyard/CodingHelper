@@ -1,12 +1,13 @@
 package cn.xunyard.idea.doc.logic;
 
 import cn.xunyard.idea.doc.DocLogger;
+import cn.xunyard.idea.doc.logic.describer.ClassDescriber;
+import cn.xunyard.idea.util.ProjectUtils;
 import com.google.common.base.Joiner;
 
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.jar.JarFile;
 
 /**
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
@@ -14,16 +15,18 @@ import java.util.jar.JarFile;
  */
 public class ServiceScanner {
 
+    private final DocBuildingContext docBuildingContext;
+
     private final String serviceSuffix;
     private final String packagePrefix;
 
     private final Set<String> scannedServiceJavaPathSet;
 
-    public ServiceScanner(String serviceSuffixParam,
-                          String packagePrefixParam) {
-        this.serviceSuffix = wrapService(serviceSuffixParam);
-        this.packagePrefix = wrapPackage(packagePrefixParam);
+    public ServiceScanner(DocBuildingContext docBuildingContext) {
+        this.serviceSuffix = wrapService(docBuildingContext.getServiceSuffix());
+        this.packagePrefix = wrapPackage(docBuildingContext.getPackagePrefix());
 
+        this.docBuildingContext = docBuildingContext;
         this.scannedServiceJavaPathSet = new HashSet<>();
     }
 
@@ -73,36 +76,23 @@ public class ServiceScanner {
                 throw new IllegalArgumentException("invalid.file.path");
             }
 
-            if (path.endsWith(".java")) {
-                String matchString = path.substring(0, path.length() - ".java".length());
-
-                String packagePath = resolveSrcPackagePath(matchString);
-                String className = path.substring(path.lastIndexOf("/") + 1, path.length() - ".java".length());
-                if (packagePrefix != null && (packagePath == null || !packagePath.contains(packagePrefix))) {
-                    return;
-                }
-
-                if (serviceSuffix != null && !matchString.endsWith(serviceSuffix)) {
-                    return;
-                }
-
-                scannedServiceJavaPathSet.add(path);
-                DocLogger.debug("发现服务:" + packagePath + "/" + className);
+            if (!path.endsWith(".java") || !ProjectUtils.isSrcClass(path)) {
+                return;
             }
+
+            ClassDescriber classDescriber = ClassDescriber.fromFullPath(path);
+            docBuildingContext.addClass(classDescriber);
+
+            if (packagePrefix != null && !classDescriber.getClassPackage().contains(packagePrefix)) {
+                return;
+            }
+
+            if (serviceSuffix != null && !classDescriber.getClassName().endsWith(serviceSuffix)) {
+                return;
+            }
+
+            scannedServiceJavaPathSet.add(path);
+            DocLogger.info("发现服务:" + classDescriber.getClassPackage() + "/" + classDescriber.getClassName());
         }
     }
-
-    private boolean isValidJavaSourcePath(String path) {
-        return path.contains(JAVA_SRC_ROOT);
-    }
-
-    private String resolveSrcPackagePath(String path) {
-        if (path == null || path.length() == 0 || !path.contains(JAVA_SRC_ROOT)) {
-            return null;
-        }
-
-        return path.substring(path.lastIndexOf(JAVA_SRC_ROOT) + JAVA_SRC_ROOT.length(), path.lastIndexOf("/"));
-    }
-
-    private final String JAVA_SRC_ROOT = "/src/main/java/";
 }

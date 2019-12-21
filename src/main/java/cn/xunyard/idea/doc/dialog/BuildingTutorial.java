@@ -38,7 +38,7 @@ public class BuildingTutorial extends JPanel {
 
     private void outputButtonActionPerformed(ActionEvent event) {
         VirtualFile virtualFile = FileChooser.chooseFile(FileChooserDescriptorFactory.createSingleFolderDescriptor(),
-                ProjectUtils.getCurrentProject(), null);
+                ProjectUtils.PROJECT.get(), null);
 
         if (virtualFile != null) {
             outputDirectory.setText(virtualFile.getPath());

@@ -1,5 +1,6 @@
 package cn.xunyard.idea.doc.logic;
 
+import cn.xunyard.idea.doc.DocLogger;
 import cn.xunyard.idea.doc.logic.describer.BeanDescriberManager;
 import cn.xunyard.idea.doc.logic.describer.ServiceDescriber;
 import cn.xunyard.idea.util.AssertUtils;
@@ -20,13 +21,16 @@ import java.util.Set;
 public class ServiceResolver {
 
     private final Set<String> servicePathSet;
+    private final DocBuildingContext docBuildingContext;
     private List<ServiceDescriber> serviceDescriberList;
 
-    public ServiceResolver(Set<String> servicePathSet) {
+    public ServiceResolver(Set<String> servicePathSet, DocBuildingContext docBuildingContext) {
         this.servicePathSet = servicePathSet;
+        this.docBuildingContext = docBuildingContext;
     }
 
     public void run() {
+        DocLogger.info("开始解析服务...");
         if (AssertUtils.isEmpty(servicePathSet)) {
             return;
         }
@@ -37,11 +41,13 @@ public class ServiceResolver {
         for (String srcPath : servicePathSet) {
             resolve(javaProjectBuilder, srcPath);
         }
+        DocLogger.info("服务解析完成");
     }
 
     private void resolve(JavaProjectBuilder builder, String srcPath) {
         try {
             JavaSource javaSource = builder.addSource(new File(srcPath));
+            docBuildingContext.setJavaProjectBuilder(builder);
             for (JavaClass javaClass : javaSource.getClasses()) {
                 resolveServiceClass(javaClass);
             }
@@ -52,6 +58,6 @@ public class ServiceResolver {
     }
 
     private void resolveServiceClass(JavaClass javaClass) {
-        serviceDescriberList.add(ServiceDescriber.fromJavaClass(javaClass));
+        serviceDescriberList.add(ServiceDescriber.fromJavaClass(javaClass, docBuildingContext));
     }
 }
