@@ -26,6 +26,10 @@ public class BeanDescriberManager {
 
     public BeanDescriber load(JavaType javaType, JavaClass javaClass, DocBuildingContext docBuildingContext) {
         ClassDescriber classDescriber = docBuildingContext.tryResolveClass(javaType.getValue(), javaClass);
+        if (classDescriber == null && docBuildingContext.getLogUnresolved()) {
+            DocLogger.warn(String.format("无法解析的类: %s，可能不是源码!", javaType.getBinaryName()));
+            return null;
+        }
 
         if (describerMap.containsKey(classDescriber.getFullPath())) {
             return describerMap.get(classDescriber.getFullPath());

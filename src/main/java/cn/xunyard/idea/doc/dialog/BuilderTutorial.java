@@ -223,7 +223,7 @@ public class BuilderTutorial extends JPanel {
         JScrollPane scrollPane = new JBScrollPane();
         scrollPane.setPreferredSize(new Dimension(19, 86));
         scrollPane.setMaximumSize(new Dimension(560, 86));
-        returnPackTextArea = new JTextArea("java.util.List\njava.util.Map");
+        returnPackTextArea = new JTextArea("java.util.List");
         scrollPane.setViewportView(returnPackTextArea);
 
         addHolderContent(holder, scrollPane, 0);

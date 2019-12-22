@@ -1,11 +1,13 @@
 package cn.xunyard.idea.doc.logic;
 
+import cn.xunyard.idea.doc.DocLogger;
 import cn.xunyard.idea.doc.logic.describer.*;
 import cn.xunyard.idea.util.AssertUtils;
 import cn.xunyard.idea.util.ObjectUtils;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,16 +24,15 @@ public class ServiceDocumentBuilder {
         this.serviceDescriberList = serviceDescriberList;
     }
 
-    public boolean run() {
+    public void run() throws IOException {
+        DocLogger.info("开始生成文档...");
         String filepath = docBuildingContext.getOutputDirectory() + "/" + docBuildingContext.getOutputFileName();
         try (FileWriter fileWriter = new FileWriter(filepath, true)) {
             for (ServiceDescriber serviceDescriber : serviceDescriberList) {
                 renderService(fileWriter, serviceDescriber);
             }
 
-            return true;
-        } catch (IOException e) {
-            return false;
+            DocLogger.info(String.format("文档生成完成，文档路径: %s", filepath));
         }
     }
 
@@ -58,30 +59,74 @@ public class ServiceDocumentBuilder {
             fileWriter.write(String.format("方法说明\n%s\n\n", apiOperation.getNote()));
         }
 
-        fileWriter.write(String.format("*方法签名*\n\n```java\n%s\n```\n", methodDescriber.getJavaMethod().toString()));
+        fileWriter.write(String.format("#### 方法签名\n\n```java\n%s\n```\n", methodDescriber.getJavaMethod().toString()));
         BeanDescriber parameter = methodDescriber.getParameter();
-        renderParameter(fileWriter, parameter);
-    }
+        fileWriter.write("#### 请求参数\n\n");
+        renderParameter(fileWriter, methodDescriber.getParameterName(), parameter);
 
-    private void renderParameter(FileWriter fileWriter, BeanDescriber parameter) throws IOException {
-        Map<String, PropertyDescriber> propertyMap = parameter.getPropertyMap();
-        fileWriter.write("\n参数名|必选|类型|描述|说明\n---|---|---|---|---\n");
-
-        for (Map.Entry<String, PropertyDescriber> entry : propertyMap.entrySet()) {
-            renderBean(fileWriter, entry.getKey(), entry.getValue());
+        fileWriter.write("#### 返回参数\n\n");
+        if (!AssertUtils.isEmpty(methodDescriber.getResponseList())) {
+            for (BeanDescriber beanDescriber : methodDescriber.getResponseList()) {
+                renderResponse(fileWriter, null, beanDescriber);
+            }
         }
     }
 
-    private void renderBean(FileWriter fileWriter, String name, PropertyDescriber property) throws IOException {
+    private void renderParameter(FileWriter fileWriter, String name, BeanDescriber parameter) throws IOException {
+        fileWriter.write(String.format("**%s**\n", name));
+
+        Map<String, PropertyDescriber> propertyMap = parameter.getPropertyMap();
+        fileWriter.write("\n参数名|必选|类型|描述|说明\n---|---|---|---|---\n");
+
+        HashMap<String, BeanDescriber> extendBeanMap = new HashMap<>();
+        for (Map.Entry<String, PropertyDescriber> entry : propertyMap.entrySet()) {
+            PropertyDescriber propertyDescriber = entry.getValue();
+            String fieldName = entry.getKey();
+            renderField(fileWriter, entry.getKey(), propertyDescriber);
+
+            if (propertyDescriber.getExtendBean() != null) {
+                extendBeanMap.put(fieldName, propertyDescriber.getExtendBean());
+            }
+        }
+
+        for (Map.Entry<String, BeanDescriber> entry : extendBeanMap.entrySet()) {
+            renderParameter(fileWriter, entry.getKey(), entry.getValue());
+        }
+    }
+
+    private void renderField(FileWriter fileWriter, String name, PropertyDescriber property) throws IOException {
         fileWriter.write(name
                 + "|" + (Boolean.TRUE.equals(property.getApiModelProperty().getRequired()) ? "是" : "否")
-                + "|" + property.getJavaField().getType().toString()
+                + "|" + property.getJavaField().getType().getValue()
                 + "|" + ObjectUtils.firstNonNull(property.getApiModelProperty().getValue(), "-")
                 + "|" + ObjectUtils.firstNonNull(property.getApiModelProperty().getNote(), "-")
                 + "\n");
     }
 
-    private void renderReturn() {
+    private void renderResponse(FileWriter fileWriter, String name, BeanDescriber beanDescriber) throws IOException {
+        if (!AssertUtils.isEmpty(name)) {
+            fileWriter.write(String.format("**%s**\n", name));
+        }
 
+        if (beanDescriber == null) {
+            return;
+        }
+
+        Map<String, PropertyDescriber> propertyMap = beanDescriber.getPropertyMap();
+        fileWriter.write("\n参数名|非空|类型|描述|说明\n---|---|---|---|---\n");
+        HashMap<String, BeanDescriber> extendBeanMap = new HashMap<>();
+        for (Map.Entry<String, PropertyDescriber> entry : propertyMap.entrySet()) {
+            PropertyDescriber propertyDescriber = entry.getValue();
+            String fieldName = entry.getKey();
+            renderField(fileWriter, entry.getKey(), propertyDescriber);
+
+            if (propertyDescriber.getExtendBean() != null) {
+                extendBeanMap.put(fieldName, propertyDescriber.getExtendBean());
+            }
+        }
+
+        for (Map.Entry<String, BeanDescriber> entry : extendBeanMap.entrySet()) {
+            renderResponse(fileWriter, entry.getKey(), entry.getValue());
+        }
     }
 }

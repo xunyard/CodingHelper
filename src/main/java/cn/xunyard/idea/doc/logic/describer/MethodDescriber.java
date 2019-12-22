@@ -5,8 +5,11 @@ import cn.xunyard.idea.doc.logic.DocBuildingContext;
 import cn.xunyard.idea.doc.logic.ServiceResolver;
 import cn.xunyard.idea.util.AssertUtils;
 import com.thoughtworks.qdox.model.*;
+import com.thoughtworks.qdox.model.impl.DefaultJavaParameterizedType;
 import lombok.Getter;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -17,8 +20,9 @@ import java.util.List;
 public class MethodDescriber {
     private final DocBuildingContext docBuildingContext;
     private final JavaMethod javaMethod;
+    private String parameterName;
     private BeanDescriber parameter;
-    private BeanDescriber response;
+    private List<BeanDescriber> responseList;
     private ApiOperation apiOperation;
 
     public static MethodDescriber fromJavaMethod(JavaClass javaClass, JavaMethod javaMethod,
@@ -31,7 +35,7 @@ public class MethodDescriber {
         this.javaMethod = javaMethod;
         resolveMethod(javaClass, javaMethod);
         resolveParameter(javaMethod, javaClass, docBuildingContext);
-        resolveResponse(javaMethod, docBuildingContext);
+        resolveResponse(javaMethod, javaClass, docBuildingContext);
     }
 
     private void resolveMethod(JavaClass javaClass, JavaMethod javaMethod) {
@@ -65,10 +69,20 @@ public class MethodDescriber {
         JavaParameter javaParameter = parameters.get(0);
 
         JavaType javaType = javaParameter.getType();
+        this.parameterName = javaParameter.getName();
         this.parameter = BeanDescriberManager.getInstance().load(javaType, javaClass, docBuildingContext);
     }
 
-    private void resolveResponse(JavaMethod javaMethod, DocBuildingContext docBuildingContext) {
-
+    private void resolveResponse(JavaMethod javaMethod, JavaClass javaClass, DocBuildingContext docBuildingContext) {
+        if (AssertUtils.isEmpty(docBuildingContext.getReturnPackList())) {
+            BeanDescriber bean = BeanDescriberManager.getInstance().load(javaMethod.getReturnType(), javaClass, docBuildingContext);
+            responseList = Collections.singletonList(bean);
+        } else {
+            responseList = new LinkedList<BeanDescriber>();
+            for (JavaType argumentType : ((DefaultJavaParameterizedType) javaMethod.getReturns()).getActualTypeArguments()) {
+                BeanDescriber bean = BeanDescriberManager.getInstance().load(argumentType, javaClass, docBuildingContext);
+                responseList.add(bean);
+            }
+        }
     }
 }

@@ -6,6 +6,7 @@ import cn.xunyard.idea.util.AssertUtils;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
+import com.thoughtworks.qdox.model.JavaType;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -18,28 +19,41 @@ import java.util.Map;
  */
 @Getter
 public class BeanDescriber {
-
+    private final JavaClass beanClass;
     private ApiModel apiModel;
     private Map<String, PropertyDescriber> propertyMap;
+    private BeanDescriber derive;
 
-    public static BeanDescriber fromJavaClass(JavaClass javaClass, DocBuildingContext docBuildingContext) {
-        return new BeanDescriber(javaClass, docBuildingContext);
+    public static BeanDescriber fromJavaClass(JavaClass beanClass, DocBuildingContext docBuildingContext) {
+        return new BeanDescriber(beanClass, docBuildingContext);
     }
 
-    private BeanDescriber(JavaClass javaClass, DocBuildingContext docBuildingContext) {
-        resolveRoot(javaClass);
+    private BeanDescriber(JavaClass beanClass, DocBuildingContext docBuildingContext) {
+        this.beanClass = beanClass;
+        resolveRoot(beanClass);
         propertyMap = new HashMap<>();
-        for (JavaField field : javaClass.getFields()) {
-            PropertyDescriber propertyDescriber = resolveField(field, javaClass, docBuildingContext);
+        for (JavaField field : beanClass.getFields()) {
+            PropertyDescriber propertyDescriber = resolveField(field, beanClass, docBuildingContext);
 
             if (propertyDescriber != null) {
                 propertyMap.put(field.getName(), propertyDescriber);
             }
         }
+
+        resolveSuperClass(beanClass, docBuildingContext);
     }
 
-    private void resolveRoot(JavaClass javaClass) {
-        List<JavaAnnotation> annotationList = javaClass.getAnnotations();
+    private void resolveSuperClass(JavaClass beanClass, DocBuildingContext docBuildingContext) {
+        JavaType superClass = beanClass.getSuperClass();
+        if (superClass == null || AssertUtils.isBasicType(superClass)) {
+            return;
+        }
+
+        this.derive = BeanDescriberManager.getInstance().load(superClass, beanClass, docBuildingContext);
+    }
+
+    private void resolveRoot(JavaClass beanClass) {
+        List<JavaAnnotation> annotationList = beanClass.getAnnotations();
         for (JavaAnnotation annotation : annotationList) {
             apiModel = ApiModel.fromAnnotation(annotation);
 
@@ -49,24 +63,24 @@ public class BeanDescriber {
         }
 
         if (apiModel == null) {
-            String comment = javaClass.getComment();
+            String comment = beanClass.getComment();
 
             if (AssertUtils.isEmpty(comment)) {
-                apiModel = new ApiModel(javaClass.getName());
+                apiModel = new ApiModel(beanClass.getName());
                 return;
             }
         }
 
 //        ServiceResolver.setResolveFail();
-        DocLogger.warn("对象: " + javaClass.getName() + " 未找到有效注释");
+        DocLogger.warn("对象: " + beanClass.getName() + " 未找到有效注释");
     }
 
-    private PropertyDescriber resolveField(JavaField javaField, JavaClass javaClass, DocBuildingContext docBuildingContext) {
+    private PropertyDescriber resolveField(JavaField javaField, JavaClass beanClass, DocBuildingContext docBuildingContext) {
         if (javaField.getModifiers().contains("final") ||
                 javaField.getModifiers().contains("static")) {
             return null;
         }
 
-        return PropertyDescriber.fromJavaField(javaField, javaClass, docBuildingContext);
+        return PropertyDescriber.fromJavaField(javaField, beanClass, docBuildingContext);
     }
 }
