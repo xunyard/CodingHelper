@@ -2,6 +2,7 @@ package cn.xunyard.idea.doc.logic.describer;
 
 import cn.xunyard.idea.doc.DocLogger;
 import cn.xunyard.idea.doc.logic.DocBuildingContext;
+import cn.xunyard.idea.doc.logic.ServiceResolver;
 import cn.xunyard.idea.util.AssertUtils;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
@@ -15,10 +16,12 @@ import java.util.List;
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
  * @date 2019-12-15
  */
+@Getter
 public class ServiceDescriber {
     private final DocBuildingContext docBuildingContext;
 
     private Api api;
+    private JavaClass javaClass;
     private List<MethodDescriber> methodDescriberList;
 
     public static ServiceDescriber fromJavaClass(JavaClass javaClass, DocBuildingContext docBuildingContext) {
@@ -27,6 +30,7 @@ public class ServiceDescriber {
 
     private ServiceDescriber(JavaClass javaClass, DocBuildingContext docBuildingContext) {
         this.docBuildingContext = docBuildingContext;
+        this.javaClass = javaClass;
         resolveRoot(javaClass);
         resolveMethod(javaClass);
     }
@@ -44,45 +48,26 @@ public class ServiceDescriber {
         String comment = javaClass.getComment();
 
         if (!AssertUtils.isEmpty(comment)) {
-            this.api = new Api(javaClass.getName(), null);
+            this.api = new Api(comment, null);
             return;
         }
 
-        DocLogger.error("服务: " + javaClass.getName() + " 未找到有效注释");
+        if (docBuildingContext.getLogUnresolved()) {
+            ServiceResolver.setResolveFail();
+            this.api = new Api(javaClass.getName(), null);
+            DocLogger.error("[注释缺失] 服务: " + javaClass.getName() + " 未找到有效注释");
+        }
     }
 
     private void resolveMethod(JavaClass javaClass) {
         methodDescriberList = new LinkedList<>();
         for (JavaMethod javaMethod : javaClass.getMethods()) {
-            if (AssertUtils.isEmpty(javaMethod.getParameters())) {
-                DocLogger.warn(javaClass.getName() + "." + javaMethod.getName() + "未找到参数");
+            if (AssertUtils.isEmpty(javaMethod.getParameters()) && docBuildingContext.getLogUnresolved()) {
+                ServiceResolver.setResolveFail();
+                DocLogger.error("[方法非法] 方法: " + javaClass.getName() + "." + javaMethod.getName() + "未找到参数");
             } else {
                 methodDescriberList.add(MethodDescriber.fromJavaMethod(javaClass, javaMethod, docBuildingContext));
             }
-        }
-    }
-
-    /**
-     * @see io.swagger.annotations.Api
-     */
-    @Getter
-    private static class Api {
-        private static final String NAME = "io.swagger.annotations.Api";
-
-        private final String value;
-        private final String note;
-
-        private Api(String value, String note) {
-            this.value = value;
-            this.note = note;
-        }
-
-        private static Api fromAnnotation(JavaAnnotation annotation) {
-            if (!NAME.equals(annotation.getType().getFullyQualifiedName())) {
-                return null;
-            }
-
-            return new Api(annotation.getProperty("value").toString(), null);
         }
     }
 }

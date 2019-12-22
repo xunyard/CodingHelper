@@ -15,17 +15,33 @@ import java.util.Map;
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
  * @date 2019-12-16
  */
+@Getter
 public class DocBuildingContext {
     private final String serviceSuffix;
     private final String packagePrefix;
     private final String outputDirectory;
+    private final String outputFileName;
+    @Setter
+    private Boolean logServiceDetail;
+    @Setter
+    private Boolean logUnresolved;
+    @Setter
+    private Boolean allowInfoMissing;
+    @Setter
+    private List<String> returnPackList;
     private Map<String, Map<String, ClassDescriber>> projectClassMap;
     private JavaProjectBuilder javaProjectBuilder;
 
-    public DocBuildingContext(String serviceSuffix, String packagePrefix, String outputDirectory) {
+    public DocBuildingContext(String serviceSuffix,
+                              String packagePrefix,
+                              String outputDirectory,
+                              String outputFileName) {
         this.serviceSuffix = serviceSuffix;
         this.packagePrefix = packagePrefix;
         this.outputDirectory = outputDirectory;
+        this.outputFileName = outputFileName;
+        this.logServiceDetail = false;
+        this.logUnresolved = false;
         this.projectClassMap = new HashMap<>();
     }
 

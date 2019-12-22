@@ -46,7 +46,7 @@ public class BeanDescriberManager {
             return null;
         }
 
-        BeanDescriber beanDescriber = BeanDescriber.fromJavaClass(beanClass);
+        BeanDescriber beanDescriber = BeanDescriber.fromJavaClass(beanClass, docBuildingContext);
         describerMap.put(classDescriber.getFullPath(), beanDescriber);
         return beanDescriber;
     }

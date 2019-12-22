@@ -1,6 +1,7 @@
 package cn.xunyard.idea.doc.logic;
 
 import cn.xunyard.idea.doc.DocLogger;
+import cn.xunyard.idea.util.AssertUtils;
 
 import java.io.File;
 import java.util.Arrays;
@@ -13,8 +14,6 @@ import java.util.stream.Collectors;
  * @date 2019-12-15
  */
 public class ServiceDocBuildingService {
-    private static final String OUTPUT_DOC_FILENAME = "doc.md";
-
     private final DocBuildingContext docBuildingContext;
 
     public ServiceDocBuildingService(DocBuildingContext docBuildingContext) {
@@ -29,8 +28,21 @@ public class ServiceDocBuildingService {
         try {
             ServiceScanner serviceScanner = new ServiceScanner(docBuildingContext);
             Set<String> srcPathSet = serviceScanner.scan(basePath);
+            if (AssertUtils.isEmpty(srcPathSet)) {
+                DocLogger.error("过程终止，未发现有效源文件路径!");
+                return;
+            }
+
             ServiceResolver serviceResolver = new ServiceResolver(srcPathSet, docBuildingContext);
-            serviceResolver.run();
+            if (!serviceResolver.run() && !docBuildingContext.getAllowInfoMissing()) {
+                DocLogger.error("过程终止，修复注释缺失问题或者打开忽略开关以继续!");
+                return;
+            }
+
+            ServiceDocumentBuilder documentBuilder = new ServiceDocumentBuilder(docBuildingContext,
+                    serviceResolver.getServiceDescriberList());
+            documentBuilder.run();
+
         } catch (Exception e) {
             DocLogger.error("fail to run, cause: " + formatException(e));
         }
@@ -51,7 +63,7 @@ public class ServiceDocBuildingService {
                 return false;
             }
 
-            String fullPath = outputDirectory + "/" + OUTPUT_DOC_FILENAME;
+            String fullPath = outputDirectory + "/" + docBuildingContext.getOutputFileName();
             File outputFile = new File(fullPath);
             if (outputFile.exists()) {
                 DocLogger.warn("检测到输出文件已存在，删除!");

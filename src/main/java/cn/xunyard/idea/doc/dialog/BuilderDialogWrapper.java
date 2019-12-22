@@ -11,23 +11,23 @@ import javax.swing.*;
  */
 public class BuilderDialogWrapper extends DialogWrapper {
 
-    private BuildingTutorial buildingTutorial;
+    private BuilderTutorial buildingTutorial;
 
     public BuilderDialogWrapper() {
         super(true);
         init();
         setTitle("文档生成");
+        this.setResizable(false);
     }
 
-    public BuildingTutorial getBuildingTutorial() {
+    public BuilderTutorial getBuildingTutorial() {
         return buildingTutorial;
     }
 
     @Nullable
     @Override
     protected JComponent createCenterPanel() {
-        buildingTutorial = new BuildingTutorial();
-
+        buildingTutorial = new BuilderTutorial();
         return buildingTutorial;
     }
 }

@@ -20,7 +20,7 @@ public class ServiceDocBuildingAction extends AnAction {
         BuilderDialogWrapper dialogWrapper = new BuilderDialogWrapper();
         if (dialogWrapper.showAndGet()) {
             DocLogger.clear();
-            DocBuildingContext docBuildingContext = dialogWrapper.getBuildingTutorial().getDocBuildingContext();
+            DocBuildingContext docBuildingContext = dialogWrapper.getBuildingTutorial().makeBuildingContext();
             new ServiceDocBuildingService(docBuildingContext).run(event.getProject().getBasePath());
         }
         ProjectUtils.PROJECT.remove();

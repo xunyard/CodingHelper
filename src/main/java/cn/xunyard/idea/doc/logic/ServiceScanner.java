@@ -92,7 +92,10 @@ public class ServiceScanner {
             }
 
             scannedServiceJavaPathSet.add(path);
-            DocLogger.info("发现服务:" + classDescriber.getClassPackage() + "/" + classDescriber.getClassName());
+
+            if (docBuildingContext.getLogServiceDetail()) {
+                DocLogger.info("发现服务:" + classDescriber.getClassPackage() + "/" + classDescriber.getClassName());
+            }
         }
     }
 }
