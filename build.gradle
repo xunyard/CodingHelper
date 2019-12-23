@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'cn.xunyard'
-version '1.0-SNAPSHOT'
+version '1.0.12.23'
 
 sourceCompatibility = 1.8
 
