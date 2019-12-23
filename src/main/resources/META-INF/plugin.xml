@@ -1,9 +1,9 @@
 <idea-plugin>
-    <id>cn.xunyard.doc-builder</id>
-    <name>Service Doc Builder</name>
+    <id>cn.xunyard.coding-helper</id>
+    <name>Coding Helper</name>
     <vendor email="xunyard@gmail.com" url="https://blog.xunyard.cn">xunyard</vendor>
 
-    <description><![CDATA[A simple tool to build service document for some kinds of facade]]></description>
+    <description><![CDATA[A simple tool for coding help such as building service document for some kinds of facade]]></description>
 
     <depends>com.intellij.modules.platform</depends>
 

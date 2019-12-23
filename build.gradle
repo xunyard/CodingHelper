@@ -18,9 +18,9 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.44'
+//    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.44'
     compile 'com.thoughtworks.qdox:qdox:2.0-M10'
-    compile 'io.swagger:swagger-annotations:1.5.14'
+    compileOnly 'io.swagger:swagger-annotations:1.5.14'
     compileOnly('org.projectlombok:lombok:1.18.2')
     annotationProcessor('org.projectlombok:lombok:1.18.2')
 }
@@ -31,6 +31,6 @@ intellij {
 }
 patchPluginXml {
     changeNotes """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
+      1.0.0<br>
+      A alpha version of service doc builder for interface kind service"""
 }
