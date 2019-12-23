@@ -77,12 +77,33 @@ public class MethodDescriber {
         if (AssertUtils.isEmpty(docBuildingContext.getReturnPackList())) {
             BeanDescriber bean = BeanDescriberManager.getInstance().load(javaMethod.getReturnType(), javaClass, docBuildingContext);
             responseList = Collections.singletonList(bean);
-        } else {
-            responseList = new LinkedList<BeanDescriber>();
-            for (JavaType argumentType : ((DefaultJavaParameterizedType) javaMethod.getReturns()).getActualTypeArguments()) {
+            return;
+        }
+
+        responseList = new LinkedList<>();
+
+        if (AssertUtils.isBasicType(javaClass)) {
+            return;
+        }
+
+        JavaClass returnClass = javaMethod.getReturns();
+        if (!AssertUtils.isBasicType(returnClass) && docBuildingContext.getReturnPackList().contains(returnClass.getName())) {
+            for (JavaType argumentType : ((DefaultJavaParameterizedType) returnClass).getActualTypeArguments()) {
                 BeanDescriber bean = BeanDescriberManager.getInstance().load(argumentType, javaClass, docBuildingContext);
                 responseList.add(bean);
             }
+
+            return;
         }
+
+        BeanDescriber bean = BeanDescriberManager.getInstance().load(returnClass, javaClass, docBuildingContext);
+        responseList.add(bean);
+
+//
+//        responseList = new LinkedList<>();
+//        for (JavaType argumentType : ((DefaultJavaParameterizedType) javaMethod.getReturns()).getActualTypeArguments()) {
+//            BeanDescriber bean = BeanDescriberManager.getInstance().load(argumentType, javaClass, docBuildingContext);
+//            responseList.add(bean);
+//        }
     }
 }

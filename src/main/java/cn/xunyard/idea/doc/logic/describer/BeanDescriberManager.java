@@ -2,6 +2,7 @@ package cn.xunyard.idea.doc.logic.describer;
 
 import cn.xunyard.idea.doc.DocLogger;
 import cn.xunyard.idea.doc.logic.DocBuildingContext;
+import cn.xunyard.idea.util.AssertUtils;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaSource;
@@ -25,6 +26,10 @@ public class BeanDescriberManager {
     }
 
     public BeanDescriber load(JavaType javaType, JavaClass javaClass, DocBuildingContext docBuildingContext) {
+        if (AssertUtils.isBasicType(javaType)) {
+            return describerMap.computeIfAbsent(javaType.getValue(), k -> BeanDescriber.fromBasicType(javaType));
+        }
+
         ClassDescriber classDescriber = docBuildingContext.tryResolveClass(javaType.getValue(), javaClass);
         if (classDescriber == null && docBuildingContext.getLogUnresolved()) {
             DocLogger.warn(String.format("无法解析的类: %s，可能不是源码!", javaType.getBinaryName()));

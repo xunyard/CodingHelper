@@ -112,6 +112,11 @@ public class ServiceDocumentBuilder {
             return;
         }
 
+        if (beanDescriber.isBasicType()) {
+            fileWriter.write(beanDescriber.getJavaType().toString() + "\n\n");
+            return;
+        }
+
         Map<String, PropertyDescriber> propertyMap = beanDescriber.getPropertyMap();
         fileWriter.write("\n参数名|非空|类型|描述|说明\n---|---|---|---|---\n");
         HashMap<String, BeanDescriber> extendBeanMap = new HashMap<>();

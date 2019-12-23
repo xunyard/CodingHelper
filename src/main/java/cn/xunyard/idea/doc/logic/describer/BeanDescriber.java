@@ -19,17 +19,29 @@ import java.util.Map;
  */
 @Getter
 public class BeanDescriber {
-    private final JavaClass beanClass;
+    private final JavaType javaType;
     private ApiModel apiModel;
     private Map<String, PropertyDescriber> propertyMap;
     private BeanDescriber derive;
+
+    public boolean isBasicType() {
+        return AssertUtils.isBasicType(javaType);
+    }
 
     public static BeanDescriber fromJavaClass(JavaClass beanClass, DocBuildingContext docBuildingContext) {
         return new BeanDescriber(beanClass, docBuildingContext);
     }
 
+    public static BeanDescriber fromBasicType(JavaType javaType) {
+        return new BeanDescriber(javaType);
+    }
+
+    private BeanDescriber(JavaType javaType) {
+        this.javaType = javaType;
+    }
+
     private BeanDescriber(JavaClass beanClass, DocBuildingContext docBuildingContext) {
-        this.beanClass = beanClass;
+        this.javaType = beanClass;
         resolveRoot(beanClass);
         propertyMap = new HashMap<>();
         for (JavaField field : beanClass.getFields()) {
