@@ -43,6 +43,8 @@ public class AssertUtils {
                 return true;
             default:
                 return false;
+//                return fullClassName.startsWith("java.lang.")
+//                        || fullClassName.startsWith("java.util");
         }
     }
 }

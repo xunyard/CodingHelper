@@ -2,7 +2,7 @@ package cn.xunyard.idea.doc.action;
 
 import cn.xunyard.idea.doc.DocLogger;
 import cn.xunyard.idea.doc.dialog.BuilderDialogWrapper;
-import cn.xunyard.idea.doc.logic.DocBuildingContext;
+import cn.xunyard.idea.doc.logic.DocConfig;
 import cn.xunyard.idea.doc.logic.ServiceDocBuildingService;
 import cn.xunyard.idea.util.ProjectUtils;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -20,8 +20,8 @@ public class ServiceDocBuildingAction extends AnAction {
         BuilderDialogWrapper dialogWrapper = new BuilderDialogWrapper();
         if (dialogWrapper.showAndGet()) {
             DocLogger.clear();
-            DocBuildingContext docBuildingContext = dialogWrapper.getBuildingTutorial().makeBuildingContext();
-            new ServiceDocBuildingService(docBuildingContext).run(event.getProject());
+            DocConfig docConfig = dialogWrapper.getBuildingTutorial().makeBuildingContext();
+            new ServiceDocBuildingService(docConfig).run(event.getProject());
         }
         ProjectUtils.PROJECT.remove();
     }

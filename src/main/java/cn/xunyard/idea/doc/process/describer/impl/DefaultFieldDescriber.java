@@ -13,13 +13,15 @@ import lombok.Getter;
 public class DefaultFieldDescriber implements FieldDescriber {
     private final boolean required;
     private final String description;
+    private final String name;
     private final String note;
     private final ClassDescriber classDescriber;
 
-    public DefaultFieldDescriber(ApiModelProperty apiModelProperty, ClassDescriber classDescriber) {
+    public DefaultFieldDescriber(ApiModelProperty apiModelProperty, String name, ClassDescriber classDescriber) {
         this.required = apiModelProperty.getRequired();
         this.description = apiModelProperty.getValue();
         this.note = apiModelProperty.getNote();
+        this.name = name;
         this.classDescriber = classDescriber;
     }
 

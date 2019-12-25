@@ -8,9 +8,7 @@ public interface FieldDescriber extends DescriberRender {
 
     boolean isRequired();
 
-    String getDescription();
-
-    String getNote();
+    String getName();
 
     boolean isBasicType();
 }

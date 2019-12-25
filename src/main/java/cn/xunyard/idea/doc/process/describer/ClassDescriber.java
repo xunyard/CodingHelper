@@ -1,5 +1,6 @@
 package cn.xunyard.idea.doc.process.describer;
 
+import cn.xunyard.idea.util.AssertUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -14,17 +15,6 @@ import java.util.Set;
 public interface ClassDescriber extends DescriberRender {
 
     /**
-     * 类描述信息
-     */
-    @Nullable
-    String getDescription();
-
-    /**
-     * 备注信息
-     */
-    String getNote();
-
-    /**
      * 是否为源代码
      */
     default boolean hasPackage() {
@@ -36,6 +26,10 @@ public interface ClassDescriber extends DescriberRender {
      */
     @Nullable
     String getPackage();
+
+    default boolean hasFields() {
+        return !AssertUtils.isEmpty(getFields());
+    }
 
     /**
      * 获得类中的字段
@@ -57,6 +51,10 @@ public interface ClassDescriber extends DescriberRender {
      */
     boolean isBasicType();
 
+    default boolean hasExtend() {
+        return !AssertUtils.isEmpty(getExtend());
+    }
+
     /**
      * 扩展的复合字段(非基础类型字段或内容)
      */
@@ -65,7 +63,9 @@ public interface ClassDescriber extends DescriberRender {
     /**
      * 是否泛型参数化
      */
-    boolean isParameterized();
+    default boolean isParameterized() {
+        return !AssertUtils.isEmpty(getParameterized());
+    }
 
     /**
      * 泛型扩展

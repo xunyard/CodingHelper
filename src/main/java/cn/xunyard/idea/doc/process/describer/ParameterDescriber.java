@@ -11,4 +11,8 @@ public interface ParameterDescriber {
      */
     String getName();
 
+    /**
+     * 类描述
+     */
+    ClassDescriber getClassDescriber();
 }

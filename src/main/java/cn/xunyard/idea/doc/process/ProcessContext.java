@@ -1,12 +1,9 @@
 package cn.xunyard.idea.doc.process;
 
-import cn.xunyard.idea.doc.process.describer.impl.SourceClassLoader;
+import cn.xunyard.idea.doc.logic.DocConfig;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
-import java.util.List;
 
 /**
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
@@ -16,25 +13,25 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProcessContext {
 
-    private final String serviceSuffix;
-    private final String packagePrefix;
-    private final String outputDirectory;
-    private final String outputFileName;
-    @Setter
-    private Boolean logServiceDetail;
-    @Setter
-    private Boolean logUnresolved;
-    @Setter
-    private Boolean allowInfoMissing;
-    @Setter
-    private List<String> returnPackList;
-
+    private final DocConfig docConfig;
     private SourceClassLoader sourceClassLoader;
     private ClassDescriberMaker classDescriberMaker;
+    private MethodDescriberMaker methodDescriberMaker;
+    private ServiceDescriberMaker serviceDescriberMaker;
 
     public void init() {
         sourceClassLoader = new SourceClassLoader(new JavaProjectBuilder());
         classDescriberMaker = new ClassDescriberMaker(this);
+        methodDescriberMaker = new MethodDescriberMaker(this);
+        serviceDescriberMaker = new ServiceDescriberMaker(this);
     }
 
+    public void clear() {
+        sourceClassLoader.clear();
+        classDescriberMaker.clear();
+        sourceClassLoader = null;
+        classDescriberMaker = null;
+        methodDescriberMaker = null;
+        serviceDescriberMaker = null;
+    }
 }

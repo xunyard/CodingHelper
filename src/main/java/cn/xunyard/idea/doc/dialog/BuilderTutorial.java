@@ -1,6 +1,6 @@
 package cn.xunyard.idea.doc.dialog;
 
-import cn.xunyard.idea.doc.logic.DocBuildingContext;
+import cn.xunyard.idea.doc.logic.DocConfig;
 import cn.xunyard.idea.util.ProjectUtils;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
@@ -79,15 +79,15 @@ public class BuilderTutorial extends JPanel {
         renderOutput();
     }
 
-    public DocBuildingContext makeBuildingContext() {
-        DocBuildingContext docBuildingContext = new DocBuildingContext(suffixTextField.getText(), prefixTextField.getText(),
+    public DocConfig makeBuildingContext() {
+        DocConfig docConfig = new DocConfig(suffixTextField.getText(), prefixTextField.getText(),
                 outputDirectoryTextWithBrowseButton.getText(), outputFileNameTextField.getText());
-        docBuildingContext.setLogServiceDetail(logServiceCheckBox.isSelected());
-        docBuildingContext.setLogUnresolved(logUnsolvedCheckBox.isSelected());
-        docBuildingContext.setAllowInfoMissing(allowInfoMissingCheckBox.isSelected());
-        docBuildingContext.setReturnPackList(Arrays.asList(returnPackTextArea.getText().split("\n")));
+        docConfig.setLogServiceDetail(logServiceCheckBox.isSelected());
+        docConfig.setLogUnresolved(logUnsolvedCheckBox.isSelected());
+        docConfig.setAllowInfoMissing(allowInfoMissingCheckBox.isSelected());
+        docConfig.setReturnPackList(Arrays.asList(returnPackTextArea.getText().split("\n")));
 
-        return docBuildingContext;
+        return docConfig;
     }
 
     private JPanel createContainer(String title) {

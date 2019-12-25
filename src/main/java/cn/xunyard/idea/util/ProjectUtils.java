@@ -2,13 +2,14 @@ package cn.xunyard.idea.util;
 
 import com.intellij.openapi.project.Project;
 import com.thoughtworks.qdox.model.JavaClass;
+import com.thoughtworks.qdox.model.JavaPackage;
 
 /**
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
  * @date 2019-12-15
  */
 public class ProjectUtils {
-    private static final String JAVA_SRC_ROOT = "/src/main/java/";
+    public static final String JAVA_SRC_ROOT = "/src/main/java/";
     public static ThreadLocal<Project> PROJECT = new ThreadLocal<>();
 
     public static boolean isSrcClass(String fullPath) {
@@ -24,7 +25,23 @@ public class ProjectUtils {
     }
 
     public static String getPackage(JavaClass javaClass) {
-        return javaClass.getPackage().getName();
+        if (javaClass.isPrimitive()) {
+            return "";
+        }
+
+        JavaPackage pkg = javaClass.getPackage();
+
+        if (pkg == null) {
+            String fullClassName = javaClass.toString();
+
+            if (fullClassName.contains(".")) {
+                return fullClassName.substring(0, fullClassName.lastIndexOf("."));
+            } else {
+                return "";
+            }
+        }
+
+        return pkg.getName();
     }
 
     public static String getSimpleName(JavaClass javaClass) {

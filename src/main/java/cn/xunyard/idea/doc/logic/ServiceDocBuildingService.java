@@ -1,16 +1,19 @@
 package cn.xunyard.idea.doc.logic;
 
 import cn.xunyard.idea.doc.DocLogger;
+import cn.xunyard.idea.doc.ServiceDocumentBuilder;
+import cn.xunyard.idea.doc.process.ProcessContext;
 import cn.xunyard.idea.util.AssertUtils;
 import cn.xunyard.idea.util.ProjectUtils;
 import com.intellij.openapi.project.Project;
+import com.thoughtworks.qdox.model.JavaClass;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.SystemIndependent;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -21,12 +24,12 @@ import java.util.stream.Collectors;
  * @date 2019-12-15
  */
 public class ServiceDocBuildingService {
-    private final DocBuildingContext docBuildingContext;
+    private final DocConfig docConfig;
     private final ThreadPoolExecutor THREAD_POOL = new ThreadPoolExecutor(1, 1, 1,
             TimeUnit.MINUTES, new LinkedBlockingDeque<>());
 
-    public ServiceDocBuildingService(DocBuildingContext docBuildingContext) {
-        this.docBuildingContext = docBuildingContext;
+    public ServiceDocBuildingService(DocConfig docConfig) {
+        this.docConfig = docConfig;
     }
 
     public synchronized void run(Project project) {
@@ -35,13 +38,13 @@ public class ServiceDocBuildingService {
             throw new RuntimeException("submit.forbidden");
         }
 
-        TaskRunner taskRunner = new TaskRunner(docBuildingContext, project);
+        TaskRunner taskRunner = new TaskRunner(docConfig, project);
         THREAD_POOL.submit(taskRunner);
     }
 
     @RequiredArgsConstructor
     private static class TaskRunner implements Runnable {
-        private final DocBuildingContext docBuildingContext;
+        private final DocConfig docConfig;
         private final Project project;
 
         @Override
@@ -57,26 +60,30 @@ public class ServiceDocBuildingService {
                 return;
             }
 
+            ProcessContext processContext = new ProcessContext(docConfig);
             try {
-                ServiceScanner serviceScanner = new ServiceScanner(docBuildingContext);
-                Set<String> srcPathSet = serviceScanner.scan(basePath);
-                if (AssertUtils.isEmpty(srcPathSet)) {
+                processContext.init();
+
+                ServiceScanner serviceScanner = new ServiceScanner(processContext);
+                List<JavaClass> serviceJavaClassList = serviceScanner.scan(basePath);
+                if (AssertUtils.isEmpty(serviceJavaClassList)) {
                     DocLogger.error("过程终止，未发现有效源文件路径!");
                     return;
                 }
 
-                ServiceResolver serviceResolver = new ServiceResolver(srcPathSet, docBuildingContext);
-                if (!serviceResolver.run() && !docBuildingContext.getAllowInfoMissing()) {
+                ServiceResolver serviceResolver = new ServiceResolver(serviceJavaClassList, processContext);
+                if (!serviceResolver.run() && !docConfig.getAllowInfoMissing()) {
                     DocLogger.error("过程终止，修复注释缺失问题或者打开忽略开关以继续!");
                     return;
                 }
 
-                ServiceDocumentBuilder documentBuilder = new ServiceDocumentBuilder(docBuildingContext,
-                        serviceResolver.getServiceDescriberList());
+                ServiceDocumentBuilder documentBuilder = new ServiceDocumentBuilder(processContext, serviceResolver.getServiceDescriberList());
                 documentBuilder.run();
 
             } catch (Exception e) {
                 DocLogger.error("fail to run, cause: " + formatException(e));
+            } finally {
+                processContext.clear();
             }
         }
 
@@ -87,7 +94,7 @@ public class ServiceDocBuildingService {
         }
 
         private boolean checkOutput() {
-            String outputDirectory = docBuildingContext.getOutputDirectory();
+            String outputDirectory = docConfig.getOutputDirectory();
             File file = new File(outputDirectory);
             try {
                 if (!file.exists() || !file.isDirectory()) {
@@ -95,7 +102,7 @@ public class ServiceDocBuildingService {
                     return false;
                 }
 
-                String fullPath = outputDirectory + "/" + docBuildingContext.getOutputFileName();
+                String fullPath = outputDirectory + "/" + docConfig.getOutputFileName();
                 File outputFile = new File(fullPath);
                 if (outputFile.exists()) {
                     DocLogger.warn("检测到输出文件已存在，删除!");

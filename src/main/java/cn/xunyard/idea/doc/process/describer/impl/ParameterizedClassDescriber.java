@@ -17,12 +17,12 @@ import java.util.Set;
 @Getter
 public class ParameterizedClassDescriber extends GeneralClassDescriber {
 
-    private final List<ClassDescriber> parameterizedList;
+    private final List<ClassDescriber> parameterized;
 
     public ParameterizedClassDescriber(JavaClass javaClass, List<FieldDescriber> fields, Set<ClassDescriber> extendSet,
-                                       List<ClassDescriber> parameterizedList) {
+                                       List<ClassDescriber> parameterized) {
         super(javaClass, fields, extendSet);
-        this.parameterizedList = ObjectUtils.firstNonNull(parameterizedList, LinkedList::new);
+        this.parameterized = ObjectUtils.firstNonNull(parameterized, LinkedList::new);
     }
 
     @Override
@@ -31,19 +31,14 @@ public class ParameterizedClassDescriber extends GeneralClassDescriber {
     }
 
     @Override
-    public boolean isParameterized() {
-        return true;
-    }
-
-    @Override
     public String toSimpleString() {
         StringBuilder sb = new StringBuilder(getSimpleName()).append("<");
-        for (int i = 0; i < parameterizedList.size(); i++) {
+        for (int i = 0; i < parameterized.size(); i++) {
             if (i != 0) {
                 sb.append(",");
             }
 
-            sb.append(parameterizedList.get(i).toSimpleString());
+            sb.append(parameterized.get(i).toSimpleString());
         }
         sb.append(">");
 

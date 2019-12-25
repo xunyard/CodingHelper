@@ -1,8 +1,13 @@
 package cn.xunyard.idea.doc.process.model;
 
+import cn.xunyard.idea.util.AssertUtils;
 import com.thoughtworks.qdox.model.JavaAnnotation;
+import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.expression.AnnotationValue;
 import lombok.Getter;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 
 /**
@@ -20,7 +25,27 @@ public class ApiModel {
         this.value = value;
     }
 
-    static ApiModel fromAnnotation(JavaAnnotation annotation) {
+    @Nullable
+    public static ApiModel fromJavaClass(JavaClass javaClass) {
+        List<JavaAnnotation> annotationList = javaClass.getAnnotations();
+        for (JavaAnnotation annotation : annotationList) {
+            ApiModel apiModel = ApiModel.fromAnnotation(annotation);
+
+            if (apiModel != null) {
+                return apiModel;
+            }
+        }
+
+        String comment = javaClass.getComment();
+
+        if (!AssertUtils.isEmpty(comment)) {
+            return new ApiModel(javaClass.getName());
+        }
+
+        return null;
+    }
+
+    private static ApiModel fromAnnotation(JavaAnnotation annotation) {
         if (!NAME.equals(annotation.getType().getFullyQualifiedName())) {
             return null;
         }

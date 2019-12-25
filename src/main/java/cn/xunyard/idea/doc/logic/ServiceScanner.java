@@ -1,13 +1,17 @@
 package cn.xunyard.idea.doc.logic;
 
 import cn.xunyard.idea.doc.DocLogger;
-import cn.xunyard.idea.doc.logic.describer.ClassDescriber;
+import cn.xunyard.idea.doc.process.ProcessContext;
+import cn.xunyard.idea.doc.process.describer.ClassDescriber;
+import cn.xunyard.idea.util.AssertUtils;
 import cn.xunyard.idea.util.ProjectUtils;
 import com.google.common.base.Joiner;
+import com.thoughtworks.qdox.model.JavaClass;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
@@ -15,19 +19,18 @@ import java.util.Set;
  */
 public class ServiceScanner {
 
-    private final DocBuildingContext docBuildingContext;
-
+    private final ProcessContext processContext;
     private final String serviceSuffix;
     private final String packagePrefix;
 
-    private final Set<String> scannedServiceJavaPathSet;
+    private final List<JavaClass> scannedServices;
 
-    public ServiceScanner(DocBuildingContext docBuildingContext) {
-        this.serviceSuffix = wrapService(docBuildingContext.getServiceSuffix());
-        this.packagePrefix = wrapPackage(docBuildingContext.getPackagePrefix());
+    public ServiceScanner(ProcessContext processContext) {
+        this.processContext = processContext;
+        this.serviceSuffix = wrapService(processContext.getDocConfig().getServiceSuffix());
+        this.packagePrefix = wrapPackage(processContext.getDocConfig().getPackagePrefix());
 
-        this.docBuildingContext = docBuildingContext;
-        this.scannedServiceJavaPathSet = new HashSet<>();
+        this.scannedServices = new LinkedList<>();
     }
 
     private String wrapPackage(String prefix) {
@@ -50,14 +53,14 @@ public class ServiceScanner {
         return suffix;
     }
 
-    public Set<String> scan(String basePath) {
+    public List<JavaClass> scan(String basePath) throws IOException {
         DocLogger.info("开始扫描服务类...");
         scanPath(basePath);
-        DocLogger.info(String.format("扫描完成!共发现%d个服务", scannedServiceJavaPathSet.size()));
-        return scannedServiceJavaPathSet;
+        DocLogger.info(String.format("扫描完成!共发现%d个服务", scannedServices.size()));
+        return scannedServices;
     }
 
-    private void scanPath(String path) {
+    private void scanPath(String path) throws IOException {
         File file = new File(path);
 
         if (file.isDirectory()) {
@@ -80,21 +83,24 @@ public class ServiceScanner {
                 return;
             }
 
-            ClassDescriber classDescriber = ClassDescriber.fromFullPath(path);
-            docBuildingContext.addClass(classDescriber);
+            List<JavaClass> javaClasses = processContext.getSourceClassLoader().loadClass(path);
+            if (AssertUtils.isEmpty(javaClasses)) {
+                return;
+            }
+            ClassDescriber classDescriber = processContext.getClassDescriberMaker().simpleFromClass(path);
 
-            if (packagePrefix != null && !classDescriber.getClassPackage().contains(packagePrefix)) {
+            if (packagePrefix != null && !classDescriber.getPackage().contains(packagePrefix)) {
                 return;
             }
 
-            if (serviceSuffix != null && !classDescriber.getClassName().endsWith(serviceSuffix)) {
+            if (serviceSuffix != null && !classDescriber.getSimpleName().endsWith(serviceSuffix)) {
                 return;
             }
 
-            scannedServiceJavaPathSet.add(path);
+            scannedServices.addAll(javaClasses);
 
-            if (docBuildingContext.getLogServiceDetail()) {
-                DocLogger.info("发现服务:" + classDescriber.getClassPackage() + "/" + classDescriber.getClassName());
+            if (processContext.getDocConfig().getLogServiceDetail()) {
+                DocLogger.info("发现服务:" + classDescriber.getPackage() + "/" + classDescriber.getSimpleName());
             }
         }
     }

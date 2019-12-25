@@ -63,11 +63,6 @@ public class BasicTypeClassDescriber implements ClassDescriber {
     }
 
     @Override
-    public boolean isParameterized() {
-        return false;
-    }
-
-    @Override
     public List<ClassDescriber> getParameterized() {
         return null;
     }

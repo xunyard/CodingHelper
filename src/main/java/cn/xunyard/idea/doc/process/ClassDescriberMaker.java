@@ -5,9 +5,11 @@ import cn.xunyard.idea.doc.logic.ServiceResolver;
 import cn.xunyard.idea.doc.process.describer.ClassDescriber;
 import cn.xunyard.idea.doc.process.describer.FieldDescriber;
 import cn.xunyard.idea.doc.process.describer.impl.*;
+import cn.xunyard.idea.doc.process.model.ApiModel;
 import cn.xunyard.idea.doc.process.model.ApiModelProperty;
 import cn.xunyard.idea.util.AssertUtils;
 import cn.xunyard.idea.util.ObjectUtils;
+import cn.xunyard.idea.util.ProjectUtils;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaParameterizedType;
@@ -31,6 +33,18 @@ public class ClassDescriberMaker {
     private final Set<String> knownParameterizedTypeSet = new HashSet<>();
     private final ProcessContext processContext;
 
+    public void clear() {
+        classDescriberMap.clear();;
+        knownParameterizedTypeSet.clear();
+    }
+
+    public ClassDescriber simpleFromClass(@NotNull String filepath) {
+        String noSuffix = filepath.substring(0, filepath.lastIndexOf("."));
+        String fullClassName = noSuffix.substring(noSuffix.lastIndexOf(ProjectUtils.JAVA_SRC_ROOT) + ProjectUtils.JAVA_SRC_ROOT.length());
+        return new BasicTypeClassDescriber(fullClassName.substring(0, fullClassName.lastIndexOf("/")),
+                fullClassName.substring(fullClassName.lastIndexOf("/") + 1));
+    }
+
     public ClassDescriber fromClass(@NotNull JavaClass javaClass) {
         if (AssertUtils.isBasicType(javaClass)) {
             return getOrLoadBasicClass(javaClass);
@@ -48,7 +62,7 @@ public class ClassDescriberMaker {
                 !AssertUtils.isEmpty(((JavaParameterizedType) javaClass).getActualTypeArguments());
     }
 
-    private ClassDescriber getOrLoadVirtualClass(JavaType javaType) {
+    public ClassDescriber getOrLoadVirtualClass(JavaType javaType) {
         String fullClassName = javaType.toString();
 
         ClassDescriber classDescriber = classDescriberMap.get(fullClassName);
@@ -78,8 +92,14 @@ public class ClassDescriberMaker {
 
     private ClassDescriber getOrLoadGeneralClass(JavaClass javaClass) {
         FieldAssociated fa = buildClassFields(javaClass);
+        ApiModel apiModel = ApiModel.fromJavaClass(javaClass);
+        GeneralClassDescriber classDescriber = new GeneralClassDescriber(javaClass, fa.getFields(), fa.getExtendSet());
 
-        return new GeneralClassDescriber(javaClass, fa.getFields(), fa.getExtendSet());
+        if (apiModel != null) {
+            classDescriber.setDescription(apiModel.getValue());
+        }
+
+        return classDescriber;
     }
 
     private FieldAssociated buildClassFields(JavaClass javaClass) {
@@ -89,7 +109,7 @@ public class ClassDescriberMaker {
     private FieldAssociated buildClassFieldsCore(JavaClass javaClass, FieldAssociated fieldAssociated) {
         fieldAssociated = ObjectUtils.firstNonNull(fieldAssociated, FieldAssociated::new);
 
-        if (AssertUtils.isBasicType(javaClass)) {
+        if (AssertUtils.isBasicType(javaClass) || javaClass.isEnum()) {
             return fieldAssociated;
         }
 
@@ -100,21 +120,26 @@ public class ClassDescriberMaker {
 
             ApiModelProperty apiModelProperty = ApiModelProperty.fromJavaField(field);
 
-            if (apiModelProperty.getValue() == null) {
+            if (apiModelProperty == null) {
                 ServiceResolver.setResolveFail();
-                if (processContext.getLogUnresolved()) {
+                if (processContext.getDocConfig().getLogUnresolved()) {
                     DocLogger.error("[注释缺失] 属性: " + javaClass.getName() + "#" + field.getName() + " 未找到有效注解");
                 }
+                apiModelProperty = new ApiModelProperty(ProjectUtils.getSimpleName(javaClass), null, false);
             }
-
             JavaClass fieldType = field.getType();
+
             ClassDescriber classDescriber = fromClass(fieldType);
-            FieldDescriber fieldDescriber = new DefaultFieldDescriber(apiModelProperty, classDescriber);
+            FieldDescriber fieldDescriber = new DefaultFieldDescriber(apiModelProperty, field.getName(), classDescriber);
             fieldAssociated.addField(fieldDescriber);
 
             if (!classDescriber.isBasicType()) {
                 fieldAssociated.addExtend(classDescriber);
             }
+        }
+
+        if (javaClass.isPrimitive()) {
+            return fieldAssociated;
         }
 
         JavaType superClassType = javaClass.getSuperClass();
@@ -167,13 +192,25 @@ public class ClassDescriberMaker {
             JavaClass typeClass = processContext.getSourceClassLoader().find(typeArgument.toString());
 
             if (typeClass == null) {
-                parametrizedList.add(getOrLoadVirtualClass(typeArgument));
+                if (typeArgument instanceof JavaClass) {
+                    parametrizedList.add(fromClass((JavaClass)typeArgument));
+                } else {
+                    parametrizedList.add(getOrLoadVirtualClass(typeArgument));
+                }
             } else {
                 parametrizedList.add(fromClass(typeClass));
             }
         }
 
         FieldAssociated fa = buildClassFields(javaClass);
-        return new ParameterizedClassDescriber(javaClass, fa.getFields(), fa.getExtendSet(), parametrizedList);
+        ParameterizedClassDescriber describer = new ParameterizedClassDescriber(javaClass, fa.getFields(),
+                fa.getExtendSet(), parametrizedList);
+
+        ApiModel apiModel = ApiModel.fromJavaClass(javaClass);
+        if (apiModel != null) {
+            describer.setDescription(apiModel.getValue());
+        }
+
+        return describer;
     }
 }

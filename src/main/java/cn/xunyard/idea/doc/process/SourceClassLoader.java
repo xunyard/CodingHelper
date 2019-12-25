@@ -1,12 +1,13 @@
-package cn.xunyard.idea.doc.process.describer.impl;
+package cn.xunyard.idea.doc.process;
 
+import cn.xunyard.idea.doc.DocLogger;
+import cn.xunyard.idea.util.ProjectUtils;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaSource;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,18 +27,29 @@ public class SourceClassLoader {
         this.loadedJavaClassMap = new HashMap<>();
     }
 
-    public List<JavaClass> loadClass(String filepath) throws IOException {
-        JavaSource javaSource = javaProjectBuilder.addSource(new File(filepath));
-        if (javaSource == null) {
+    public void clear() {
+        loadedJavaClassMap.clear();
+    }
+
+    public List<JavaClass> loadClass(String filepath) {
+        try {
+            JavaSource javaSource = javaProjectBuilder.addSource(new File(filepath));
+            if (javaSource == null) {
+                return null;
+            }
+
+            List<JavaClass> javaClassList = javaSource.getClasses();
+            for (JavaClass javaClass : javaClassList) {
+                String pkg = ProjectUtils.getPackage(javaClass);
+                String simpleName = ProjectUtils.getSimpleName(javaClass);
+                loadedJavaClassMap.putIfAbsent(pkg + "." + simpleName, javaClass);
+            }
+
+            return javaClassList;
+        } catch (Exception e) {
+            DocLogger.error("解析java类出现问题，路径: " + filepath);
             return null;
         }
-
-        List<JavaClass> javaClassList = javaSource.getClasses();
-        for (JavaClass javaClass : javaClassList) {
-            loadedJavaClassMap.putIfAbsent(javaClass.getValue(), javaClass);
-        }
-
-        return javaClassList;
     }
 
     @Nullable

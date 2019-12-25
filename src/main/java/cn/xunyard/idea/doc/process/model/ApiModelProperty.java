@@ -6,6 +6,8 @@ import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.expression.AnnotationValue;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -15,6 +17,7 @@ import java.util.Objects;
  * @see io.swagger.annotations.ApiModelProperty
  */
 @Getter
+@RequiredArgsConstructor
 public class ApiModelProperty {
     private static final String NAME = "io.swagger.annotations.ApiModelProperty";
 
@@ -22,17 +25,10 @@ public class ApiModelProperty {
     private final String note;
     private final Boolean required;
 
-    private ApiModelProperty(String value, String note, Boolean required) {
-        this.value = value;
-        this.note = note;
-        this.required = required;
-    }
-
+    @Nullable
     public static ApiModelProperty fromJavaField(JavaField javaField) {
-        ApiModelProperty apiModelProperty = null;
-
         for (JavaAnnotation annotation : javaField.getAnnotations()) {
-            apiModelProperty = fromAnnotation(annotation);
+            ApiModelProperty apiModelProperty = fromAnnotation(annotation);
 
             if (apiModelProperty != null) {
                 return apiModelProperty;
@@ -45,7 +41,7 @@ public class ApiModelProperty {
             return new ApiModelProperty(ObjectUtils.smoothStr(comment), null, false);
         }
 
-        return new ApiModelProperty(null, null, false);
+        return null;
     }
 
     private static ApiModelProperty fromAnnotation(JavaAnnotation annotation) {

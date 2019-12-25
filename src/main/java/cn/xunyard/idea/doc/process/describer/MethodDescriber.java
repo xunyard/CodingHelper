@@ -1,5 +1,6 @@
 package cn.xunyard.idea.doc.process.describer;
 
+import cn.xunyard.idea.util.AssertUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -20,11 +21,23 @@ public interface MethodDescriber {
      */
     String getNote();
 
+    String getPackage();
+
+    String getClassName();
+
+    default boolean hasResponse() {
+        return getResponse() != null;
+    }
+
     /**
      * 方法返回对象
      */
     @Nullable
-    ResponseDescriber getResponse();
+    ClassDescriber getResponse();
+
+    default boolean hasParameter() {
+        return !AssertUtils.isEmpty(getParameterList());
+    }
 
     /**
      * 方法参数集合
@@ -34,5 +47,10 @@ public interface MethodDescriber {
     /**
      * 方法名
      */
-    String getValue();
+    String getSimpleName();
+
+    /**
+     * 方法签名
+     */
+    String getSign();
 }

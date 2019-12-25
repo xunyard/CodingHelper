@@ -30,7 +30,7 @@ public class VirtualClassDescriber implements ClassDescriber {
     @Nullable
     @Override
     public String getDescription() {
-        return null;
+        return className;
     }
 
     @Override
@@ -71,11 +71,6 @@ public class VirtualClassDescriber implements ClassDescriber {
     @Override
     public Set<ClassDescriber> getExtend() {
         return Collections.emptySet();
-    }
-
-    @Override
-    public boolean isParameterized() {
-        return false;
     }
 
     @Override

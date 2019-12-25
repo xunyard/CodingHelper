@@ -21,6 +21,9 @@ public interface ServiceDescriber {
     @Nullable
     String getNote();
 
+    /**
+     * 方法描述
+     */
     List<MethodDescriber> getMethods();
 
     /**
@@ -31,10 +34,10 @@ public interface ServiceDescriber {
     /**
      * 类名
      */
-    String getSimpleValue();
+    String getSimpleClass();
 
     /**
      * 带包路径的完整类名
      */
-    String getFullValue();
+    String getFullName();
 }
