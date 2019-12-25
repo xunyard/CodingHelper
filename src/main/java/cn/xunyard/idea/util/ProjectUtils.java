@@ -2,6 +2,7 @@ package cn.xunyard.idea.util;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
+import com.thoughtworks.qdox.model.JavaClass;
 
 /**
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
@@ -21,5 +22,13 @@ public class ProjectUtils {
         }
 
         return fullPath.substring(fullPath.lastIndexOf(JAVA_SRC_ROOT) + JAVA_SRC_ROOT.length(), fullPath.lastIndexOf("/"));
+    }
+
+    public static String getPackage(JavaClass javaClass) {
+        return javaClass.getPackage().getName();
+    }
+
+    public static String getSimpleName(JavaClass javaClass) {
+        return javaClass.getSimpleName();
     }
 }

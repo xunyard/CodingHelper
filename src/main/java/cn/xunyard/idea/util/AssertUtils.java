@@ -25,13 +25,17 @@ public class AssertUtils {
     }
 
     public static boolean isBasicType(JavaType type) {
-        switch (type.toString()) {
+        return isBasicType(type.toString());
+    }
+
+    public static boolean isBasicType(String fullClassName) {
+        switch (fullClassName) {
+            case "java.lang.Object":
             case "java.lang.Boolean":
             case "java.lang.Byte":
             case "java.lang.Integer":
             case "java.lang.Long":
             case "java.lang.Char":
-            case "java.lang.Object":
             case "java.lang.String":
             case "java.lang.Float":
             case "java.lang.Double":

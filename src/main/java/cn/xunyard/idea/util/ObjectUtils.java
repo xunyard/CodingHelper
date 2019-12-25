@@ -1,6 +1,7 @@
 package cn.xunyard.idea.util;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
@@ -18,6 +19,18 @@ public class ObjectUtils {
         }
 
         return other;
+    }
+
+    public static <T> T firstNonNull(T first, Supplier<T> supplier) {
+        if (first != null) {
+            return first;
+        }
+
+        if (supplier == null) {
+            throw new IllegalArgumentException("supplier.is.null");
+        }
+
+        return supplier.get();
     }
 
     public static <T, R> R takeIfNonNull(T source, Function<T, R> take) {
