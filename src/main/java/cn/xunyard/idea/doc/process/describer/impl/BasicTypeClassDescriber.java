@@ -1,4 +1,4 @@
-package cn.xunyard.idea.doc.process;
+package cn.xunyard.idea.doc.process.describer.impl;
 
 import cn.xunyard.idea.doc.process.describer.ClassDescriber;
 import cn.xunyard.idea.doc.process.describer.FieldDescriber;
@@ -16,11 +16,10 @@ public class BasicTypeClassDescriber implements ClassDescriber {
     private final String packageName;
     private final String className;
 
-    BasicTypeClassDescriber(String packageName, String className) {
+    public BasicTypeClassDescriber(String packageName, String className) {
         this.packageName = packageName;
         this.className = className;
     }
-
 
     @Nullable
     @Override
@@ -71,5 +70,10 @@ public class BasicTypeClassDescriber implements ClassDescriber {
     @Override
     public List<ClassDescriber> getParameterized() {
         return null;
+    }
+
+    @Override
+    public String toSimpleString() {
+        return className;
     }
 }

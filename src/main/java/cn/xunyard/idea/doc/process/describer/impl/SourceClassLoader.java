@@ -1,8 +1,9 @@
-package cn.xunyard.idea.doc.process;
+package cn.xunyard.idea.doc.process.describer.impl;
 
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaSource;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +40,7 @@ public class SourceClassLoader {
         return javaClassList;
     }
 
+    @Nullable
     public JavaClass find(String fullClassName) {
         return loadedJavaClassMap.get(fullClassName);
     }

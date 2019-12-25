@@ -1,7 +1,6 @@
 package cn.xunyard.idea.util;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
 import com.thoughtworks.qdox.model.JavaClass;
 
 /**

@@ -1,5 +1,6 @@
 package cn.xunyard.idea.doc.process;
 
+import cn.xunyard.idea.doc.process.describer.impl.SourceClassLoader;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

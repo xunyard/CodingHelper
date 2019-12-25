@@ -4,6 +4,7 @@ import cn.xunyard.idea.doc.DocLogger;
 import cn.xunyard.idea.doc.logic.ServiceResolver;
 import cn.xunyard.idea.doc.process.describer.ClassDescriber;
 import cn.xunyard.idea.doc.process.describer.FieldDescriber;
+import cn.xunyard.idea.doc.process.describer.impl.*;
 import cn.xunyard.idea.doc.process.model.ApiModelProperty;
 import cn.xunyard.idea.util.AssertUtils;
 import cn.xunyard.idea.util.ObjectUtils;
@@ -12,10 +13,10 @@ import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaParameterizedType;
 import com.thoughtworks.qdox.model.JavaType;
 import com.thoughtworks.qdox.model.impl.DefaultJavaParameterizedType;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -26,6 +27,7 @@ import java.util.*;
 public class ClassDescriberMaker {
 
     private final Map<String, ClassDescriber> classDescriberMap = new HashMap<>();
+    @Getter
     private final Set<String> knownParameterizedTypeSet = new HashSet<>();
     private final ProcessContext processContext;
 
@@ -46,6 +48,18 @@ public class ClassDescriberMaker {
                 !AssertUtils.isEmpty(((JavaParameterizedType) javaClass).getActualTypeArguments());
     }
 
+    private ClassDescriber getOrLoadVirtualClass(JavaType javaType) {
+        String fullClassName = javaType.toString();
+
+        ClassDescriber classDescriber = classDescriberMap.get(fullClassName);
+        if (classDescriber == null) {
+            classDescriber = new VirtualClassDescriber(javaType);
+            classDescriberMap.put(fullClassName, classDescriber);
+        }
+
+        return classDescriber;
+    }
+
 
     private ClassDescriber getOrLoadBasicClass(JavaType javaType) {
         String name = javaType.getValue();
@@ -53,7 +67,7 @@ public class ClassDescriberMaker {
         ClassDescriber classDescriber = classDescriberMap.get(name);
 
         if (classDescriber == null) {
-            String fullName = javaType.getValue();
+            String fullName = javaType.toString();
             classDescriber = new BasicTypeClassDescriber(fullName.substring(0, fullName.lastIndexOf(".")),
                     fullName.substring(fullName.lastIndexOf(".") + 1));
             classDescriberMap.put(fullName, classDescriber);
@@ -94,12 +108,12 @@ public class ClassDescriberMaker {
             }
 
             JavaClass fieldType = field.getType();
-            FieldDescriber fieldDescriber = new DefaultFieldDescriber(apiModelProperty.getRequired(),
-                    apiModelProperty.getValue(), apiModelProperty.getNote(), fieldType);
+            ClassDescriber classDescriber = fromClass(fieldType);
+            FieldDescriber fieldDescriber = new DefaultFieldDescriber(apiModelProperty, classDescriber);
             fieldAssociated.addField(fieldDescriber);
 
-            if (!fieldDescriber.isBasicType()) {
-                fieldAssociated.addExtend(fromClass(fieldType));
+            if (!classDescriber.isBasicType()) {
+                fieldAssociated.addExtend(classDescriber);
             }
         }
 
@@ -116,7 +130,7 @@ public class ClassDescriberMaker {
         if (superClass != null) {
             return buildClassFieldsCore(superClass, fieldAssociated);
         } else {
-            DocLogger.warn(String.format("无法解析的类: %s，可能不是源码!", superClassType.getBinaryName()));
+            getOrLoadVirtualClass(superClassType);
             return fieldAssociated;
         }
     }
@@ -145,10 +159,15 @@ public class ClassDescriberMaker {
 
         List<ClassDescriber> parametrizedList = new LinkedList<>();
         for (JavaType typeArgument : javaClass.getActualTypeArguments()) {
+            if (AssertUtils.isBasicType(typeArgument)) {
+                parametrizedList.add(getOrLoadVirtualClass(typeArgument));
+                continue;
+            }
+
             JavaClass typeClass = processContext.getSourceClassLoader().find(typeArgument.toString());
 
             if (typeClass == null) {
-                // TODO 非源代码引用，处理不来
+                parametrizedList.add(getOrLoadVirtualClass(typeArgument));
             } else {
                 parametrizedList.add(fromClass(typeClass));
             }
@@ -156,13 +175,5 @@ public class ClassDescriberMaker {
 
         FieldAssociated fa = buildClassFields(javaClass);
         return new ParameterizedClassDescriber(javaClass, fa.getFields(), fa.getExtendSet(), parametrizedList);
-    }
-
-    public static void main(String[] args) throws IOException {
-        ProcessContext processContext = new ProcessContext("", "", "", "");
-        processContext.init();
-        processContext.getSourceClassLoader().loadClass("/Users/xunyard/terminus/item-center/itemcenter-component/ic-item/item-api/src/main/java/io/terminus/parana/item/item/api/bean/response/item/ItemInfo.java");
-        List<JavaClass> javaClasses = processContext.getSourceClassLoader().loadClass("/Users/xunyard/terminus/item-center/itemcenter-component/ic-item/item-api/src/main/java/io/terminus/parana/item/item/api/bean/response/item/FullItemInfo.java");
-        ClassDescriber classDescriber = processContext.getClassDescriberMaker().fromClass(javaClasses.iterator().next());
     }
 }

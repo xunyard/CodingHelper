@@ -1,4 +1,4 @@
-package cn.xunyard.idea.doc.process;
+package cn.xunyard.idea.doc.process.describer.impl;
 
 import cn.xunyard.idea.doc.process.describer.ClassDescriber;
 import cn.xunyard.idea.doc.process.describer.FieldDescriber;

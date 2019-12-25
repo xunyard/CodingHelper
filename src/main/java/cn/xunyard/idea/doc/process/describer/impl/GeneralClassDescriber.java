@@ -1,6 +1,7 @@
-package cn.xunyard.idea.doc.process;
+package cn.xunyard.idea.doc.process.describer.impl;
 
 import cn.xunyard.idea.doc.process.describer.ClassDescriber;
+import cn.xunyard.idea.doc.process.describer.ClassDescriberMerge;
 import cn.xunyard.idea.doc.process.describer.FieldDescriber;
 import cn.xunyard.idea.util.AssertUtils;
 import cn.xunyard.idea.util.ObjectUtils;
@@ -28,7 +29,7 @@ public class GeneralClassDescriber extends BasicTypeClassDescriber implements Cl
     @Setter
     private String note;
 
-    GeneralClassDescriber(JavaClass javaClass, List<FieldDescriber> fields, Set<ClassDescriber> extendSet) {
+    public GeneralClassDescriber(JavaClass javaClass, List<FieldDescriber> fields, Set<ClassDescriber> extendSet) {
         super(ProjectUtils.getPackage(javaClass), ProjectUtils.getSimpleName(javaClass));
         this.javaClass = javaClass;
         this.fields = ObjectUtils.firstNonNull(fields, LinkedList::new);

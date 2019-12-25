@@ -1,6 +1,4 @@
-package cn.xunyard.idea.doc.process;
-
-import cn.xunyard.idea.doc.process.describer.ClassDescriber;
+package cn.xunyard.idea.doc.process.describer;
 
 /**
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>

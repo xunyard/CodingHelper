@@ -11,7 +11,7 @@ import java.util.Set;
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
  * @date 2019-12-24
  */
-public interface ClassDescriber {
+public interface ClassDescriber extends DescriberRender {
 
     /**
      * 类描述信息
@@ -25,8 +25,16 @@ public interface ClassDescriber {
     String getNote();
 
     /**
+     * 是否为源代码
+     */
+    default boolean hasPackage() {
+        return true;
+    }
+
+    /**
      * 包路径
      */
+    @Nullable
     String getPackage();
 
     /**

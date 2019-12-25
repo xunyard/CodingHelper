@@ -1,4 +1,4 @@
-package cn.xunyard.idea.doc.process;
+package cn.xunyard.idea.doc.process.describer.impl;
 
 import cn.xunyard.idea.doc.process.describer.ClassDescriber;
 import cn.xunyard.idea.doc.process.describer.FieldDescriber;
@@ -33,5 +33,20 @@ public class ParameterizedClassDescriber extends GeneralClassDescriber {
     @Override
     public boolean isParameterized() {
         return true;
+    }
+
+    @Override
+    public String toSimpleString() {
+        StringBuilder sb = new StringBuilder(getSimpleName()).append("<");
+        for (int i = 0; i < parameterizedList.size(); i++) {
+            if (i != 0) {
+                sb.append(",");
+            }
+
+            sb.append(parameterizedList.get(i).toSimpleString());
+        }
+        sb.append(">");
+
+        return sb.toString();
     }
 }
