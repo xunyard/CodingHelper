@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'cn.xunyard'
-version '1.0.12.23'
+version '1.0.12.28'
 
 sourceCompatibility = 1.8
 
@@ -33,4 +33,5 @@ patchPluginXml {
     changeNotes """
       1.0.0<br>
       A alpha version of service doc builder for interface kind service"""
+    sinceBuild 181
 }

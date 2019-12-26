@@ -3,6 +3,7 @@ package cn.xunyard.idea.util;
 import com.intellij.openapi.project.Project;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaPackage;
+import com.thoughtworks.qdox.model.JavaType;
 
 /**
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
@@ -44,7 +45,11 @@ public class ProjectUtils {
         return pkg.getName();
     }
 
-    public static String getSimpleName(JavaClass javaClass) {
-        return javaClass.getSimpleName();
+    public static String getSimpleName(JavaType javaType) {
+        if (javaType instanceof JavaClass) {
+            return ((JavaClass)javaType).getSimpleName();
+        }
+
+        return javaType.getValue();
     }
 }

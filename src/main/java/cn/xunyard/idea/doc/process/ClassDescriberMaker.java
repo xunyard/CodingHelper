@@ -32,9 +32,11 @@ public class ClassDescriberMaker {
     @Getter
     private final Set<String> knownParameterizedTypeSet = new HashSet<>();
     private final ProcessContext processContext;
+    private boolean first = true;
+    private final Set<String> holdingFullClassNameSet = new HashSet<>();
 
     public void clear() {
-        classDescriberMap.clear();;
+        classDescriberMap.clear();
         knownParameterizedTypeSet.clear();
     }
 
@@ -46,20 +48,42 @@ public class ClassDescriberMaker {
     }
 
     public ClassDescriber fromClass(@NotNull JavaClass javaClass) {
+        if (first) {
+            first = false;
+            holdingFullClassNameSet.clear();
+        }
+
+        ClassDescriber classDescriber = null;
+
         if (AssertUtils.isBasicType(javaClass)) {
-            return getOrLoadBasicClass(javaClass);
+            classDescriber = getOrLoadBasicClass(javaClass);
         }
 
-        if (isParameterizedClass(javaClass)) {
-            return getOrLoadParameterizedClass((DefaultJavaParameterizedType) javaClass);
+        if (classDescriber == null && isParameterizedClass(javaClass)) {
+            classDescriber = getOrLoadParameterizedClass((DefaultJavaParameterizedType) javaClass);
         }
 
-        return getOrLoadGeneralClass(javaClass);
+        if (classDescriber == null) {
+            classDescriber = getOrLoadGeneralClass(javaClass);
+        }
+
+        first = false;
+        return classDescriber;
     }
 
-    private static boolean isParameterizedClass(JavaClass javaClass) {
-        return javaClass instanceof JavaParameterizedType &&
-                !AssertUtils.isEmpty(((JavaParameterizedType) javaClass).getActualTypeArguments());
+    private static boolean isParameterizedClass(JavaType javaType) {
+        return javaType instanceof JavaParameterizedType &&
+                !AssertUtils.isEmpty(((JavaParameterizedType) javaType).getActualTypeArguments());
+    }
+
+    private boolean cycleReference(JavaClass javaClass) {
+        String classFullName = buildClassFullName(javaClass);
+        if (holdingFullClassNameSet.contains(classFullName)) {
+            return true;
+        } else {
+            holdingFullClassNameSet.add(classFullName);
+            return false;
+        }
     }
 
     public ClassDescriber getOrLoadVirtualClass(JavaType javaType) {
@@ -106,14 +130,59 @@ public class ClassDescriberMaker {
         return buildClassFieldsCore(javaClass, null);
     }
 
+    private static String buildClassFullName(JavaClass javaClass) {
+        String basicFullClassName = ProjectUtils.getPackage(javaClass) + "." + ProjectUtils.getSimpleName(javaClass);
+        if (!isParameterizedClass(javaClass)) {
+            return basicFullClassName;
+        }
+
+        return buildParameterizedSign(new StringBuilder(basicFullClassName), (JavaParameterizedType) javaClass);
+    }
+
+    private static String buildParameterizedSign(StringBuilder sb, JavaParameterizedType javaClass) {
+        sb.append("<");
+
+        List<JavaType> typeArguments = javaClass.getActualTypeArguments();
+        for (int i = 0; i < typeArguments.size(); i++) {
+            if (i > 0) {
+                sb.append(",");
+            }
+
+            JavaType argumentType = typeArguments.get(i);
+
+            if (isParameterizedClass(argumentType)) {
+                buildParameterizedSign(sb, (JavaParameterizedType) argumentType);
+            } else {
+                sb.append(ProjectUtils.getSimpleName(argumentType));
+            }
+        }
+        sb.append(">");
+
+        return sb.toString();
+    }
+
+    /**
+     * 构建class的field
+     * <p>
+     * 使用holdingFullClassNameSet来防止对象的嵌套循环
+     * </p>
+     *
+     * @param javaClass       javaClass实例
+     * @param fieldAssociated field描述
+     */
     private FieldAssociated buildClassFieldsCore(JavaClass javaClass, FieldAssociated fieldAssociated) {
         fieldAssociated = ObjectUtils.firstNonNull(fieldAssociated, FieldAssociated::new);
+
+        if (cycleReference(javaClass)) {
+            return fieldAssociated;
+        }
 
         if (AssertUtils.isBasicType(javaClass) || javaClass.isEnum()) {
             return fieldAssociated;
         }
 
-        for (JavaField field : javaClass.getFields()) {
+        for (
+                JavaField field : javaClass.getFields()) {
             if (field.getModifiers().contains("final") || field.getModifiers().contains("static")) {
                 continue;
             }
@@ -158,6 +227,7 @@ public class ClassDescriberMaker {
             getOrLoadVirtualClass(superClassType);
             return fieldAssociated;
         }
+
     }
 
     private ClassDescriber getOrLoadParameterizedClass(DefaultJavaParameterizedType javaClass) {
@@ -193,7 +263,7 @@ public class ClassDescriberMaker {
 
             if (typeClass == null) {
                 if (typeArgument instanceof JavaClass) {
-                    parametrizedList.add(fromClass((JavaClass)typeArgument));
+                    parametrizedList.add(fromClass((JavaClass) typeArgument));
                 } else {
                     parametrizedList.add(getOrLoadVirtualClass(typeArgument));
                 }
