@@ -63,7 +63,7 @@ public abstract class AbstractWindowedLogger {
 
     private static ToolWindow getToolWindow(@NotNull Project project) {
         if (TOOL_WINDOW != null) {
-            if (TOOL_WINDOW.isActive()) {
+            if (!TOOL_WINDOW.isActive()) {
                 TOOL_WINDOW.activate(null);
             }
 
