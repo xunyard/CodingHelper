@@ -1,11 +1,13 @@
 package cn.xunyard.idea.coding.doc;
 
 import cn.xunyard.idea.coding.doc.process.ProcessContext;
-import cn.xunyard.idea.coding.doc.process.describer.*;
+import cn.xunyard.idea.coding.doc.process.builder.ParameterRender;
+import cn.xunyard.idea.coding.doc.process.builder.ResponseRender;
+import cn.xunyard.idea.coding.doc.process.describer.MethodDescriber;
+import cn.xunyard.idea.coding.doc.process.describer.ServiceDescriber;
 import cn.xunyard.idea.coding.log.Logger;
 import cn.xunyard.idea.coding.log.LoggerFactory;
 import cn.xunyard.idea.coding.util.AssertUtils;
-import cn.xunyard.idea.coding.util.ObjectUtils;
 import lombok.RequiredArgsConstructor;
 
 import java.io.FileWriter;
@@ -21,7 +23,8 @@ public class ServiceDocumentBuilder {
     private final Logger log = LoggerFactory.getLogger(DocConfig.IDENTITY);
     private final ProcessContext processContext;
     private final List<ServiceDescriber> serviceDescriberList;
-
+    private final ParameterRender parameterRender = new ParameterRender();
+    private final ResponseRender responseRender = new ResponseRender();
 
     public void run() throws IOException {
         log.info("开始生成文档...");
@@ -54,7 +57,7 @@ public class ServiceDocumentBuilder {
         fileWriter.write(String.format("### %s\n", methodDescriber.getDescription()));
 
         if (!AssertUtils.isEmpty(methodDescriber.getNote())) {
-            fileWriter.write(String.format("方法说明\n%s\n\n", methodDescriber.getNote()));
+            fileWriter.write(String.format("\n>%s\n\n", methodDescriber.getNote()));
         }
 
         fileWriter.write(String.format("#### 方法签名\n\n```java\n%s\n```\n", methodDescriber.getSign()));
@@ -62,99 +65,14 @@ public class ServiceDocumentBuilder {
         if (methodDescriber.hasParameter()) {
             fileWriter.write("#### 请求参数\n\n");
 
-            renderParameter(fileWriter, methodDescriber.getParameterList().iterator().next());
+            parameterRender.renderParameter(fileWriter, methodDescriber.getParameterList().iterator().next());
         }
 
 
         if (methodDescriber.hasResponse()) {
             fileWriter.write("#### 返回参数\n\n");
-            renderResponse(fileWriter, methodDescriber.getResponse());
+            responseRender.renderParameter(fileWriter, methodDescriber.getResponse());
         }
     }
 
-    private void renderParameter(FileWriter fileWriter, ParameterDescriber parameterDescriber) throws IOException {
-        renderParameterClassDescriber(fileWriter, parameterDescriber.getClassDescriber());
-    }
-
-    private void renderParameterClassDescriber(FileWriter fileWriter, ClassDescriber classDescriber) throws IOException {
-        fileWriter.write(String.format("**%s**\n",
-                ObjectUtils.firstNonNull(classDescriber.getDescription(), classDescriber.getSimpleName())));
-
-        if (classDescriber.hasNote()) {
-            fileWriter.write(String.format("\n%s\n\n", classDescriber.getNote()));
-        }
-
-        if (classDescriber.isBasicType()) {
-            fileWriter.write(String.format("%s\n\n", classDescriber.toSimpleString()));
-            return;
-        }
-
-        if (classDescriber.hasFields()) {
-            fileWriter.write("\n参数名|必填|类型|描述|说明\n---|---|---|---|---\n");
-
-            for (FieldDescriber field : classDescriber.getFields()) {
-                renderField(fileWriter, field);
-            }
-        }
-
-        if (classDescriber.hasExtend()) {
-            for (ClassDescriber describer : classDescriber.getExtend()) {
-                renderParameterClassDescriber(fileWriter, describer);
-            }
-        }
-
-        if (classDescriber.isParameterized()) {
-            for (ClassDescriber describer : classDescriber.getParameterized()) {
-                renderResponseClassDescriber(fileWriter, describer);
-            }
-        }
-    }
-
-    private void renderField(FileWriter fileWriter, FieldDescriber field) throws IOException {
-        fileWriter.write(field.getName()
-                + "|" + (field.isRequired() ? "是" : "否")
-                + "|" + field.toSimpleString()
-                + "|" + ObjectUtils.firstNonNull(field.getDescription(), "-")
-                + "|" + ObjectUtils.firstNonNull(field.getNote(), "-")
-                + "\n");
-    }
-
-    private void renderResponse(FileWriter fileWriter, ClassDescriber classDescriber) throws IOException {
-        renderResponseClassDescriber(fileWriter, classDescriber);
-    }
-
-    private void renderResponseClassDescriber(FileWriter fileWriter, ClassDescriber classDescriber) throws IOException {
-        fileWriter.write(String.format("**%s**\n", classDescriber.isParameterized() ? classDescriber.toSimpleString() :
-                ObjectUtils.firstNonNull(classDescriber.getDescription(), classDescriber.getSimpleName())));
-
-
-        if (classDescriber.hasNote()) {
-            fileWriter.write(String.format("\n%s\n\n", classDescriber.getNote()));
-        }
-
-        if (classDescriber.isBasicType()) {
-            fileWriter.write(String.format("%s\n\n", classDescriber.toSimpleString()));
-            return;
-        }
-
-        if (classDescriber.hasFields()) {
-            fileWriter.write("\n参数名|必选|类型|描述|说明\n---|---|---|---|---\n");
-
-            for (FieldDescriber field : classDescriber.getFields()) {
-                renderField(fileWriter, field);
-            }
-        }
-
-        if (classDescriber.hasExtend()) {
-            for (ClassDescriber describer : classDescriber.getExtend()) {
-                renderResponseClassDescriber(fileWriter, describer);
-            }
-        }
-
-        if (classDescriber.isParameterized()) {
-            for (ClassDescriber describer : classDescriber.getParameterized()) {
-                renderResponseClassDescriber(fileWriter, describer);
-            }
-        }
-    }
 }

@@ -1,5 +1,6 @@
 package cn.xunyard.idea.coding.doc.process;
 
+import cn.xunyard.idea.coding.doc.ClassUtils;
 import cn.xunyard.idea.coding.doc.DocConfig;
 import cn.xunyard.idea.coding.log.Logger;
 import cn.xunyard.idea.coding.log.LoggerFactory;

@@ -44,7 +44,11 @@ public class ServiceResolver {
         }
 
         for (JavaClass javaClass : serviceClasses) {
-            serviceDescriberList.add(processContext.getServiceDescriberMaker().fromJavaClass(javaClass));
+            ServiceDescriber serviceDescriber = processContext.getServiceDescriberMaker().fromJavaClass(javaClass);
+
+            if (serviceDescriber != null) {
+                serviceDescriberList.add(serviceDescriber);
+            }
         }
         log.info("服务解析完成");
 

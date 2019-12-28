@@ -1,5 +1,6 @@
 package cn.xunyard.idea.coding.doc.process;
 
+import cn.xunyard.idea.coding.doc.ClassUtils;
 import cn.xunyard.idea.coding.doc.DocConfig;
 import cn.xunyard.idea.coding.doc.ServiceResolver;
 import cn.xunyard.idea.coding.doc.process.describer.MethodDescriber;
@@ -12,6 +13,7 @@ import cn.xunyard.idea.coding.util.AssertUtils;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaMethod;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,9 +28,11 @@ public class ServiceDescriberMaker {
     private final Logger log = LoggerFactory.getLogger(DocConfig.IDENTITY);
     private final ProcessContext processContext;
 
+    @Nullable
     public ServiceDescriber fromJavaClass(JavaClass javaClass) {
         if (!javaClass.isInterface()) {
-            throw new IllegalArgumentException("only allow interface kind service");
+            log.warn(String.format("%s不是有效的服务(接口)", javaClass));
+            return null;
         }
 
         Api api = Api.fromJavaClass(javaClass);

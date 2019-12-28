@@ -17,9 +17,7 @@ public interface ClassDescriber extends DescriberRender {
     /**
      * 是否为源代码
      */
-    default boolean hasPackage() {
-        return true;
-    }
+    boolean hasPackage();
 
     /**
      * 包路径
@@ -29,6 +27,10 @@ public interface ClassDescriber extends DescriberRender {
 
     default boolean hasFields() {
         return !AssertUtils.isEmpty(getFields());
+    }
+
+    default boolean isCycleReference() {
+        return false;
     }
 
     /**

@@ -3,7 +3,7 @@
     <name>Coding Helper</name>
     <vendor email="xunyard@gmail.com" url="https://blog.xunyard.cn">xunyard</vendor>
 
-    <description><![CDATA[A simple tool for coding help such as building service document for some kinds of facade]]></description>
+    <description><![CDATA[A tool for coding help such as service document building]]></description>
 
     <depends>com.intellij.modules.platform</depends>
 
@@ -16,7 +16,6 @@
 
             <action id="cn.xunyard.doc" class="cn.xunyard.idea.coding.doc.action.ServiceDocBuildingAction" text="Build Service Doc"
                     description="A simple tool for service document building.">
-                <add-to-group group-id="ToolsMenu" anchor="first"/>
             </action>
         </group>
     </actions>

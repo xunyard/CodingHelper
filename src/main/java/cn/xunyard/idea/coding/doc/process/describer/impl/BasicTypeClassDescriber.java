@@ -24,12 +24,17 @@ public class BasicTypeClassDescriber implements ClassDescriber {
     @Nullable
     @Override
     public String getDescription() {
-        return className;
+        return null;
     }
 
     @Override
     public String getNote() {
         return null;
+    }
+
+    @Override
+    public boolean hasPackage() {
+        return true;
     }
 
     @Override

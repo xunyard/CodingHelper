@@ -9,6 +9,10 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface DescriberRender {
 
+    default boolean hasDescription() {
+        return !AssertUtils.isEmpty(getDescription());
+    }
+
     /**
      * 类描述信息
      */

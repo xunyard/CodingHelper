@@ -35,7 +35,7 @@ public class ApiOperation {
         String comment = javaMethod.getComment();
 
         if (!AssertUtils.isEmpty(comment)) {
-            return new ApiOperation(comment, null);
+            return new ApiOperation(ObjectUtils.smoothStr(comment), null);
         }
 
         return null;
@@ -51,12 +51,9 @@ public class ApiOperation {
             return null;
         }
 
-        String value = annotationValue.toString();
-        if (value.startsWith("\"")) {
-            value = value.substring(1, value.length() - 1);
-        }
+        String value = ObjectUtils.removeQuotation(annotationValue.toString());
 
         return new ApiOperation(value,
-                ObjectUtils.takeIfNonNull(annotation.getProperty("note"), it -> ObjectUtils.smoothStr(it.toString())));
+                ObjectUtils.takeIfNonNull(annotation.getProperty("notes"), it -> ObjectUtils.smoothStr(it.toString())));
     }
 }

@@ -50,11 +50,23 @@ public class ObjectUtils {
             return null;
         }
 
-        String[] splits = s.split("\n");
+        String[] splits = removeQuotation(s).split("\n");
         StringBuilder sb = new StringBuilder();
         for (String split : splits) {
             sb.append(split);
         }
         return sb.toString();
+    }
+
+    public static String removeQuotation(String str) {
+        if (AssertUtils.isEmpty(str)) {
+            return str;
+        }
+
+        if (str.startsWith("\"")) {
+            return str.substring(1, str.length() - 1);
+        }
+
+        return str;
     }
 }

@@ -1,7 +1,9 @@
 package cn.xunyard.idea.coding.doc.process.describer.impl;
 
+import cn.xunyard.idea.coding.doc.ClassUtils;
 import cn.xunyard.idea.coding.doc.process.describer.ClassDescriber;
 import cn.xunyard.idea.coding.doc.process.describer.FieldDescriber;
+import cn.xunyard.idea.coding.doc.process.describer.ParameterizedClass;
 import cn.xunyard.idea.coding.util.ObjectUtils;
 import com.thoughtworks.qdox.model.JavaClass;
 import lombok.Getter;
@@ -15,7 +17,7 @@ import java.util.Set;
  * @date 2019-12-24
  */
 @Getter
-public class ParameterizedClassDescriber extends GeneralClassDescriber {
+public class ParameterizedClassDescriber extends GeneralClassDescriber implements ParameterizedClass {
 
     private final List<ClassDescriber> parameterized;
 
@@ -23,11 +25,6 @@ public class ParameterizedClassDescriber extends GeneralClassDescriber {
                                        List<ClassDescriber> parameterized) {
         super(javaClass, fields, extendSet);
         this.parameterized = ObjectUtils.firstNonNull(parameterized, LinkedList::new);
-    }
-
-    @Override
-    public boolean isBasicType() {
-        return false;
     }
 
     @Override
@@ -43,5 +40,21 @@ public class ParameterizedClassDescriber extends GeneralClassDescriber {
         sb.append(">");
 
         return sb.toString();
+    }
+
+    @Override
+    public boolean isParameterizedBasicType() {
+        for (ClassDescriber classDescriber : parameterized) {
+            if (!classDescriber.isBasicType()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean isCommonCollectionClass() {
+        return ClassUtils.isCommonCollectionClass(super.getJavaClass());
     }
 }

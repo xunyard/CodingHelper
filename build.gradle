@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'cn.xunyard'
-version '1.1.12.26'
+version '1.1.0'
 
 sourceCompatibility = 1.8
 
@@ -32,6 +32,8 @@ intellij {
 patchPluginXml {
     changeNotes """
       1.0.0<br>
-      A alpha version of service doc builder for interface kind service"""
+      A alpha version of service doc builder for interface kind service<br>
+      1.1.0<br>
+      Made big refactor and fix most problem of document file render"""
     sinceBuild 181
 }

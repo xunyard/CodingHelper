@@ -1,25 +1,46 @@
 package cn.xunyard.idea.coding.doc.process.describer.impl;
 
-import cn.xunyard.idea.coding.doc.ClassUtils;
 import cn.xunyard.idea.coding.doc.process.describer.ClassDescriber;
 import cn.xunyard.idea.coding.doc.process.describer.FieldDescriber;
 import com.thoughtworks.qdox.model.JavaType;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 /**
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
- * @date 2019-12-25
+ * @date 2019-12-28
  */
-public class VirtualClassDescriber extends AbstractBasicClass implements ClassDescriber{
-    private final JavaType javaType;
+public class ReferenceClassDescriber extends AbstractBasicClass implements ClassDescriber {
 
-    public VirtualClassDescriber(JavaType javaType) {
+    public ReferenceClassDescriber(JavaType javaType) {
         super(javaType);
-        this.javaType = javaType;
+    }
+
+    @Override
+    public boolean isCycleReference() {
+        return true;
+    }
+
+    @Override
+    public List<FieldDescriber> getFields() {
+        return null;
+    }
+
+    @Override
+    public boolean isBasicType() {
+        return false;
+    }
+
+    @Override
+    public Set<ClassDescriber> getExtend() {
+        return null;
+    }
+
+    @Override
+    public List<ClassDescriber> getParameterized() {
+        return null;
     }
 
     @Nullable
@@ -31,30 +52,5 @@ public class VirtualClassDescriber extends AbstractBasicClass implements ClassDe
     @Override
     public String getNote() {
         return null;
-    }
-
-    @Override
-    public List<FieldDescriber> getFields() {
-        return null;
-    }
-
-    @Override
-    public boolean isBasicType() {
-        return ClassUtils.isBasicType(javaType);
-    }
-
-    @Override
-    public Set<ClassDescriber> getExtend() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public List<ClassDescriber> getParameterized() {
-        return null;
-    }
-
-    @Override
-    public String toSimpleString() {
-        return getSimpleName();
     }
 }

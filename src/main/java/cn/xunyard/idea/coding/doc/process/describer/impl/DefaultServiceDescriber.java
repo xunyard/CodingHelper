@@ -1,6 +1,6 @@
 package cn.xunyard.idea.coding.doc.process.describer.impl;
 
-import cn.xunyard.idea.coding.doc.process.ClassUtils;
+import cn.xunyard.idea.coding.doc.ClassUtils;
 import cn.xunyard.idea.coding.doc.process.describer.MethodDescriber;
 import cn.xunyard.idea.coding.doc.process.describer.ServiceDescriber;
 import cn.xunyard.idea.coding.doc.process.model.Api;

@@ -54,13 +54,10 @@ public class ApiModelProperty {
             return null;
         }
 
-        String value = annotationValue.toString();
-        if (value.startsWith("\"")) {
-            value = value.substring(1, value.length() - 1);
-        }
+        String value = ObjectUtils.removeQuotation(annotationValue.toString());
 
         return new ApiModelProperty(value,
-                ObjectUtils.takeIfNonNull(annotation.getProperty("note"), Objects::toString),
+                ObjectUtils.takeIfNonNull(annotation.getProperty("notes"), Objects::toString),
                 ObjectUtils.takeBoolean(annotation.getProperty("required")));
     }
 }

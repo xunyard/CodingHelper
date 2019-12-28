@@ -1,5 +1,6 @@
 package cn.xunyard.idea.coding.doc.process;
 
+import cn.xunyard.idea.coding.doc.ClassUtils;
 import cn.xunyard.idea.coding.doc.DocConfig;
 import cn.xunyard.idea.coding.doc.ServiceResolver;
 import cn.xunyard.idea.coding.doc.process.describer.ClassDescriber;
@@ -19,6 +20,7 @@ import com.thoughtworks.qdox.model.impl.DefaultJavaParameterizedType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -33,8 +35,7 @@ public class ClassDescriberMaker {
     @Getter
     private final Set<String> knownParameterizedTypeSet = new HashSet<>();
     private final ProcessContext processContext;
-    private boolean first = true;
-    private final Set<String> holdingFullClassNameSet = new HashSet<>();
+    private final LinkedList<String> recursionClassFullName = new LinkedList<>();
 
     public void clear() {
         classDescriberMap.clear();
@@ -48,10 +49,20 @@ public class ClassDescriberMaker {
                 fullClassName.substring(fullClassName.lastIndexOf("/") + 1));
     }
 
+    @NotNull
     public ClassDescriber fromClass(@NotNull JavaClass javaClass) {
-        if (first) {
-            first = false;
-            holdingFullClassNameSet.clear();
+        // 第一次调用不会为空
+        return fromClassCore(javaClass);
+    }
+
+    @Nullable
+    public ClassDescriber fromClassCore(@NotNull JavaClass javaClass) {
+        String classFullName = buildClassFullName(javaClass);
+
+        if (recursionClassFullName.contains(classFullName)) {
+            return new ReferenceClassDescriber(javaClass);
+        } else {
+            recursionClassFullName.addFirst(classFullName);
         }
 
         ClassDescriber classDescriber = null;
@@ -68,23 +79,14 @@ public class ClassDescriberMaker {
             classDescriber = getOrLoadGeneralClass(javaClass);
         }
 
-        first = false;
+        recursionClassFullName.removeFirst();
         return classDescriber;
     }
+
 
     private static boolean isParameterizedClass(JavaType javaType) {
         return javaType instanceof JavaParameterizedType &&
                 !AssertUtils.isEmpty(((JavaParameterizedType) javaType).getActualTypeArguments());
-    }
-
-    private boolean cycleReference(JavaClass javaClass) {
-        String classFullName = buildClassFullName(javaClass);
-        if (holdingFullClassNameSet.contains(classFullName)) {
-            return true;
-        } else {
-            holdingFullClassNameSet.add(classFullName);
-            return false;
-        }
     }
 
     public ClassDescriber getOrLoadVirtualClass(JavaType javaType) {
@@ -162,28 +164,14 @@ public class ClassDescriberMaker {
         return sb.toString();
     }
 
-    /**
-     * 构建class的field
-     * <p>
-     * 使用holdingFullClassNameSet来防止对象的嵌套循环
-     * </p>
-     *
-     * @param javaClass       javaClass实例
-     * @param fieldAssociated field描述
-     */
     private FieldAssociated buildClassFieldsCore(JavaClass javaClass, FieldAssociated fieldAssociated) {
         fieldAssociated = ObjectUtils.firstNonNull(fieldAssociated, FieldAssociated::new);
-
-        if (cycleReference(javaClass)) {
-            return fieldAssociated;
-        }
 
         if (ClassUtils.isBasicType(javaClass) || javaClass.isEnum()) {
             return fieldAssociated;
         }
 
-        for (
-                JavaField field : javaClass.getFields()) {
+        for (JavaField field : javaClass.getFields()) {
             if (field.getModifiers().contains("final") || field.getModifiers().contains("static")) {
                 continue;
             }
@@ -195,15 +183,15 @@ public class ClassDescriberMaker {
                 if (processContext.getDocConfig().getLogUnresolved()) {
                     log.error("[注释缺失] 属性: " + javaClass.getName() + "#" + field.getName() + " 未找到有效注解");
                 }
-                apiModelProperty = new ApiModelProperty(ClassUtils.getSimpleName(javaClass), null, false);
+                apiModelProperty = new ApiModelProperty(null, null, false);
             }
             JavaClass fieldType = field.getType();
 
-            ClassDescriber classDescriber = fromClass(fieldType);
+            ClassDescriber classDescriber = fromClassCore(fieldType);
             FieldDescriber fieldDescriber = new DefaultFieldDescriber(apiModelProperty, field.getName(), classDescriber);
             fieldAssociated.addField(fieldDescriber);
 
-            if (!classDescriber.isBasicType()) {
+            if (classDescriber != null && !classDescriber.isBasicType()) {
                 fieldAssociated.addExtend(classDescriber);
             }
         }
@@ -246,7 +234,7 @@ public class ClassDescriberMaker {
 
             if (classDescriber == null) {
                 JavaClass typeClass = processContext.getSourceClassLoader().find(fullName);
-                classDescriber = fromClass(typeClass);
+                classDescriber = fromClassCore(typeClass);
                 classDescriberMap.putIfAbsent(fullName, classDescriber);
             }
 
@@ -264,12 +252,12 @@ public class ClassDescriberMaker {
 
             if (typeClass == null) {
                 if (typeArgument instanceof JavaClass) {
-                    parametrizedList.add(fromClass((JavaClass) typeArgument));
+                    parametrizedList.add(fromClassCore((JavaClass) typeArgument));
                 } else {
                     parametrizedList.add(getOrLoadVirtualClass(typeArgument));
                 }
             } else {
-                parametrizedList.add(fromClass(typeClass));
+                parametrizedList.add(fromClassCore(typeClass));
             }
         }
 

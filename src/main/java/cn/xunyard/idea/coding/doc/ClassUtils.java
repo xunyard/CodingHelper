@@ -1,4 +1,4 @@
-package cn.xunyard.idea.coding.doc.process;
+package cn.xunyard.idea.coding.doc;
 
 import cn.xunyard.idea.coding.util.AssertUtils;
 import com.thoughtworks.qdox.model.JavaClass;
@@ -68,6 +68,18 @@ public class ClassUtils {
             case "java.lang.Float":
             case "java.lang.Double":
             case "java.util.Date":
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public static boolean isCommonCollectionClass(JavaType type) {
+        String className = type.toString();
+        switch (className) {
+            case "java.util.List":
+            case "java.util.Set":
+            case "java.util.Map":
                 return true;
             default:
                 return false;

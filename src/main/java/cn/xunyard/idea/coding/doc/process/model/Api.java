@@ -1,6 +1,7 @@
 package cn.xunyard.idea.coding.doc.process.model;
 
 import cn.xunyard.idea.coding.util.AssertUtils;
+import cn.xunyard.idea.coding.util.ObjectUtils;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.expression.AnnotationValue;
@@ -37,7 +38,7 @@ public class Api {
         String comment = javaClass.getComment();
 
         if (!AssertUtils.isEmpty(comment)) {
-            return new Api(comment, null);
+            return new Api(ObjectUtils.smoothStr(comment), null);
         }
 
         return null;
@@ -54,10 +55,7 @@ public class Api {
             return null;
         }
 
-        String value = annotationValue.toString();
-        if (value.startsWith("\"")) {
-            value = value.substring(1, value.length() - 1);
-        }
+        String value = ObjectUtils.removeQuotation(annotationValue.toString());
 
         return new Api(value, null);
     }

@@ -1,6 +1,5 @@
 package cn.xunyard.idea.coding.doc.process.describer.impl;
 
-import cn.xunyard.idea.coding.doc.process.ClassUtils;
 import cn.xunyard.idea.coding.doc.process.describer.ClassDescriber;
 import cn.xunyard.idea.coding.doc.process.describer.ClassDescriberMerge;
 import cn.xunyard.idea.coding.doc.process.describer.FieldDescriber;
@@ -20,7 +19,7 @@ import java.util.Set;
  * @date 2019-12-24
  */
 @Getter
-public class GeneralClassDescriber extends BasicTypeClassDescriber implements ClassDescriberMerge {
+public class GeneralClassDescriber extends AbstractBasicClass implements ClassDescriber, ClassDescriberMerge {
     private final JavaClass javaClass;
     private final List<FieldDescriber> fields;
     private final Set<ClassDescriber> extendSet;
@@ -30,7 +29,7 @@ public class GeneralClassDescriber extends BasicTypeClassDescriber implements Cl
     private String note;
 
     public GeneralClassDescriber(JavaClass javaClass, List<FieldDescriber> fields, Set<ClassDescriber> extendSet) {
-        super(ClassUtils.getPackage(javaClass), ClassUtils.getSimpleName(javaClass));
+        super(javaClass);
         this.javaClass = javaClass;
         this.fields = ObjectUtils.firstNonNull(fields, LinkedList::new);
         this.extendSet = ObjectUtils.firstNonNull(extendSet, HashSet::new);
@@ -44,6 +43,11 @@ public class GeneralClassDescriber extends BasicTypeClassDescriber implements Cl
     @Override
     public Set<ClassDescriber> getExtend() {
         return extendSet;
+    }
+
+    @Override
+    public List<ClassDescriber> getParameterized() {
+        return null;
     }
 
     @Override
