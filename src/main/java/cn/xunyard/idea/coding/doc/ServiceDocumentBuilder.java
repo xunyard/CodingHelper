@@ -1,10 +1,10 @@
 package cn.xunyard.idea.coding.doc;
 
-import cn.xunyard.idea.coding.doc.process.ProcessContext;
-import cn.xunyard.idea.coding.doc.process.builder.ParameterRender;
-import cn.xunyard.idea.coding.doc.process.builder.ResponseRender;
-import cn.xunyard.idea.coding.doc.process.describer.MethodDescriber;
-import cn.xunyard.idea.coding.doc.process.describer.ServiceDescriber;
+import cn.xunyard.idea.coding.doc.logic.ProcessContext;
+import cn.xunyard.idea.coding.doc.logic.builder.ParameterRender;
+import cn.xunyard.idea.coding.doc.logic.builder.ResponseRender;
+import cn.xunyard.idea.coding.doc.logic.describer.MethodDescriber;
+import cn.xunyard.idea.coding.doc.logic.describer.ServiceDescriber;
 import cn.xunyard.idea.coding.log.Logger;
 import cn.xunyard.idea.coding.log.LoggerFactory;
 import cn.xunyard.idea.coding.util.AssertUtils;

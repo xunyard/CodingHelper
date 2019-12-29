@@ -1,6 +1,6 @@
 package cn.xunyard.idea.coding.doc;
 
-import cn.xunyard.idea.coding.doc.process.ProcessContext;
+import cn.xunyard.idea.coding.doc.logic.ProcessContext;
 import cn.xunyard.idea.coding.log.Logger;
 import cn.xunyard.idea.coding.log.LoggerFactory;
 import cn.xunyard.idea.coding.util.AssertUtils;
