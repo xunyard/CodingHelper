@@ -14,7 +14,7 @@
         <group id="cn.xunyard.coding.GroupActions" text="Coding Helper" popup="true">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
 
-            <action id="cn.xunyard.doc" class="cn.xunyard.idea.coding.doc.action.DocumentBuildingAction" text="Build Service Doc"
+            <action id="cn.xunyard.doc" class="cn.xunyard.idea.coding.doc.action.DocumentBuildingAction" text="Build Service Document"
                     description="A simple tool for service document building.">
             </action>
         </group>

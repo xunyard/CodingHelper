@@ -91,11 +91,11 @@ public class ServiceScanner {
             }
             ClassDescriber classDescriber = processContext.getClassDescriberMaker().simpleFromClass(path);
 
-            if (packagePrefix != null && !classDescriber.getPackage().contains(packagePrefix)) {
+            if (!AssertUtils.isEmpty(packagePrefix)  && !classDescriber.getPackage().startsWith(packagePrefix)) {
                 return;
             }
 
-            if (serviceSuffix != null && !classDescriber.getSimpleName().endsWith(serviceSuffix)) {
+            if (!AssertUtils.isEmpty(serviceSuffix) && !classDescriber.getSimpleName().endsWith(serviceSuffix)) {
                 return;
             }
 
