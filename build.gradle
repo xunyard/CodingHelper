@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'cn.xunyard'
-version '1.1.0.1'
+version '1.1.0.2'
 
 sourceCompatibility = 1.8
 
@@ -35,5 +35,5 @@ patchPluginXml {
       A alpha version of service doc builder for interface kind service<br>
       1.1.0<br>
       Made big refactor and fix most problem of document file render"""
-    sinceBuild 181
+    sinceBuild 182
 }
