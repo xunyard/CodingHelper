@@ -1,7 +1,6 @@
 package cn.xunyard.idea.coding.doc.logic.maker;
 
-import cn.xunyard.idea.coding.doc.DocConfig;
-import cn.xunyard.idea.coding.doc.ServiceResolver;
+import cn.xunyard.idea.coding.doc.logic.DocConfig;
 import cn.xunyard.idea.coding.doc.logic.ProcessContext;
 import cn.xunyard.idea.coding.doc.logic.describer.ClassDescriber;
 import cn.xunyard.idea.coding.doc.logic.describer.MethodDescriber;
@@ -9,6 +8,7 @@ import cn.xunyard.idea.coding.doc.logic.describer.ParameterDescriber;
 import cn.xunyard.idea.coding.doc.logic.describer.impl.DefaultMethodDescriber;
 import cn.xunyard.idea.coding.doc.logic.describer.impl.DefaultParameterDescriber;
 import cn.xunyard.idea.coding.doc.logic.model.ApiOperation;
+import cn.xunyard.idea.coding.doc.logic.service.ServiceResolver;
 import cn.xunyard.idea.coding.log.Logger;
 import cn.xunyard.idea.coding.log.LoggerFactory;
 import cn.xunyard.idea.coding.util.AssertUtils;

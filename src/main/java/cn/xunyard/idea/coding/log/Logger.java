@@ -15,4 +15,6 @@ public interface Logger {
     void warn(String format, Object... args);
 
     void error(String format, Object... args);
+
+    void done();
 }

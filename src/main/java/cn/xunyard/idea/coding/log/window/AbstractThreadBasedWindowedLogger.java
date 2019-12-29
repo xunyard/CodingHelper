@@ -1,15 +1,14 @@
-package cn.xunyard.idea.coding.log;
+package cn.xunyard.idea.coding.log.window;
 
 import com.intellij.execution.impl.ConsoleViewImpl;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.project.Project;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,8 +19,9 @@ import java.util.concurrent.Executors;
  */
 public abstract class AbstractThreadBasedWindowedLogger extends AbstractWindowedLogger {
 
+    private static final Integer THREAD_SLEEP_TIME = 200;
     // 最大允许无日志刷出1分钟
-    private static final Integer MAX_LOG_WAIT_CYCLE_COUNT = 60 * 1000 / 50;
+    private static final Integer MAX_LOG_WAIT_CYCLE_COUNT = 60 * 1000 / THREAD_SLEEP_TIME;
 
     private static final Queue<LogMessage> messageQueue = new ConcurrentLinkedQueue<>();
     private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -29,14 +29,15 @@ public abstract class AbstractThreadBasedWindowedLogger extends AbstractWindowed
 
     public static class LogSummit implements Runnable {
 
+        private final Set<Project> activatedProject = new HashSet<>();
+
         @SneakyThrows
         @Override
         public void run() {
             int i = 0;
             do {
-
                 if (messageQueue.isEmpty()) {
-                    Thread.sleep(50);
+                    Thread.sleep(THREAD_SLEEP_TIME);
                     if (i++ > MAX_LOG_WAIT_CYCLE_COUNT) {
                         LOG_RUNNING = false;
                         return;
@@ -45,7 +46,19 @@ public abstract class AbstractThreadBasedWindowedLogger extends AbstractWindowed
                     i = 0;
                     List<LogMessage> messages = new LinkedList<>();
                     while (messageQueue.peek() != null) {
-                        messages.add(messageQueue.poll());
+                        LogMessage message = messageQueue.poll();
+
+                        if (message.getOperation() == LogOperation.DONE) {
+                            i = Integer.MAX_VALUE;
+                            break;
+                        }
+
+                        if (!activatedProject.contains(message.getProject())) {
+                            ApplicationManager.getApplication().invokeLater(() -> activeToolWindow(message.getProject()));
+                            activatedProject.add(message.getProject());
+                        }
+
+                        messages.add(message);
                     }
 
                     ApplicationManager.getApplication().invokeLater(new RenderLogger(messages));

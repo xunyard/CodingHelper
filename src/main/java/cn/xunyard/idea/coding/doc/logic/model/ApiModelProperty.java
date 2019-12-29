@@ -9,8 +9,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-
 /**
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
  * @date 2019-12-22
@@ -57,7 +55,7 @@ public class ApiModelProperty {
         String value = ObjectUtils.removeQuotation(annotationValue.toString());
 
         return new ApiModelProperty(value,
-                ObjectUtils.takeIfNonNull(annotation.getProperty("notes"), Objects::toString),
+                ObjectUtils.takeIfNonNull(annotation.getProperty("notes"), it -> ObjectUtils.removeQuotation(it.toString())),
                 ObjectUtils.takeBoolean(annotation.getProperty("required")));
     }
 }

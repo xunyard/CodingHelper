@@ -1,9 +1,9 @@
 package cn.xunyard.idea.coding.doc.dialog;
 
-import cn.xunyard.idea.coding.doc.DocConfig;
-import cn.xunyard.idea.coding.util.ProjectUtils;
+import cn.xunyard.idea.coding.doc.logic.DocConfig;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.TitledSeparator;
@@ -20,6 +20,8 @@ import java.util.Arrays;
  * @date 2019-12-21
  */
 public class BuilderTutorial extends JPanel {
+
+    private final Project project;
 
     /**
      * 文件后缀，用于区分java文件
@@ -66,7 +68,8 @@ public class BuilderTutorial extends JPanel {
      */
     private JTextArea returnPackTextArea;
 
-    public BuilderTutorial() {
+    public BuilderTutorial(Project project) {
+        this.project = project;
         this.setLayout(new VerticalLayout());
         this.setPreferredSize(new Dimension(600, 500));
         initComponents();
@@ -260,7 +263,7 @@ public class BuilderTutorial extends JPanel {
             outputDirectoryTextWithBrowseButton.setText("/tmp");
             outputDirectoryTextWithBrowseButton.addActionListener(e -> {
                 VirtualFile virtualFile = FileChooser.chooseFile(FileChooserDescriptorFactory.createSingleFolderDescriptor(),
-                        ProjectUtils.PROJECT.get(), null);
+                        project, null);
 
                 if (virtualFile != null) {
                     outputDirectoryTextWithBrowseButton.setText(virtualFile.getPath());

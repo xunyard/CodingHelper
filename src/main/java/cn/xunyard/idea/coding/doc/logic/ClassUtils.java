@@ -1,4 +1,4 @@
-package cn.xunyard.idea.coding.doc;
+package cn.xunyard.idea.coding.doc.logic;
 
 import cn.xunyard.idea.coding.util.AssertUtils;
 import com.thoughtworks.qdox.model.JavaClass;

@@ -1,5 +1,6 @@
-package cn.xunyard.idea.coding.doc;
+package cn.xunyard.idea.coding.doc.logic.service;
 
+import cn.xunyard.idea.coding.doc.logic.DocConfig;
 import cn.xunyard.idea.coding.doc.logic.ProcessContext;
 import cn.xunyard.idea.coding.doc.logic.describer.ServiceDescriber;
 import cn.xunyard.idea.coding.log.Logger;

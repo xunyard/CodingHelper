@@ -1,13 +1,13 @@
 package cn.xunyard.idea.coding.doc.logic.maker;
 
-import cn.xunyard.idea.coding.doc.ClassUtils;
-import cn.xunyard.idea.coding.doc.DocConfig;
-import cn.xunyard.idea.coding.doc.ServiceResolver;
+import cn.xunyard.idea.coding.doc.logic.ClassUtils;
+import cn.xunyard.idea.coding.doc.logic.DocConfig;
 import cn.xunyard.idea.coding.doc.logic.ProcessContext;
 import cn.xunyard.idea.coding.doc.logic.describer.MethodDescriber;
 import cn.xunyard.idea.coding.doc.logic.describer.ServiceDescriber;
 import cn.xunyard.idea.coding.doc.logic.describer.impl.DefaultServiceDescriber;
 import cn.xunyard.idea.coding.doc.logic.model.Api;
+import cn.xunyard.idea.coding.doc.logic.service.ServiceResolver;
 import cn.xunyard.idea.coding.log.Logger;
 import cn.xunyard.idea.coding.log.LoggerFactory;
 import cn.xunyard.idea.coding.util.AssertUtils;

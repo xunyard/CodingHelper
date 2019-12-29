@@ -1,4 +1,4 @@
-package cn.xunyard.idea.coding.log;
+package cn.xunyard.idea.coding.log.window;
 
 import com.intellij.openapi.project.Project;
 import lombok.Getter;

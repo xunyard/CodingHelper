@@ -1,7 +1,5 @@
 package cn.xunyard.idea.coding.doc.logic;
 
-import cn.xunyard.idea.coding.doc.ClassUtils;
-import cn.xunyard.idea.coding.doc.DocConfig;
 import cn.xunyard.idea.coding.log.Logger;
 import cn.xunyard.idea.coding.log.LoggerFactory;
 import com.thoughtworks.qdox.JavaProjectBuilder;

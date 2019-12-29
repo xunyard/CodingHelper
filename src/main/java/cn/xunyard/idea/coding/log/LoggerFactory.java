@@ -1,5 +1,7 @@
 package cn.xunyard.idea.coding.log;
 
+import cn.xunyard.idea.coding.log.window.WindowLogger;
+
 import java.util.HashMap;
 import java.util.Map;
 

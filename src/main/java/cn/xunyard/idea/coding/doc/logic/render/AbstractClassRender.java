@@ -1,4 +1,4 @@
-package cn.xunyard.idea.coding.doc.logic.builder;
+package cn.xunyard.idea.coding.doc.logic.render;
 
 import cn.xunyard.idea.coding.doc.logic.describer.ClassDescriber;
 import cn.xunyard.idea.coding.doc.logic.describer.FieldDescriber;
@@ -47,21 +47,15 @@ public abstract class AbstractClassRender {
         }
     }
 
-    protected void renderClassBasicCore(FileWriter fileWriter, ClassDescriber classDescriber, Set<String> rendered) throws IOException {
-        if (canSkip(classDescriber, rendered)) {
-            return;
-        }
-
-        if (classDescriber.isCycleReference()) {
-            return;
-        }
-
-        if (classDescriber.isBasicType()) {
-            return;
+    protected boolean renderClassBasicCore(FileWriter fileWriter, ClassDescriber classDescriber, Set<String> rendered) throws IOException {
+        if (canSkip(classDescriber, rendered) ||
+                classDescriber.isCycleReference() ||
+                classDescriber.isBasicType()) {
+            return false;
         }
 
         if (classDescriber.isParameterized() && ((ParameterizedClass) classDescriber).isCommonCollectionClass()) {
-            return;
+            return false;
         }
 
         fileWriter.write(String.format("\n``` %s ```\n", classDescriber.toSimpleString()));
@@ -73,6 +67,8 @@ public abstract class AbstractClassRender {
         if (classDescriber.hasNote()) {
             fileWriter.write(String.format("\n%s\n\n", classDescriber.getNote()));
         }
+
+        return true;
     }
 
     /**
@@ -118,8 +114,10 @@ public abstract class AbstractClassRender {
             return;
         }
 
-        renderClassBasicCore(fileWriter, classDescriber, rendered);
-        renderParameterClassFields(fileWriter, classDescriber);
+        boolean render = renderClassBasicCore(fileWriter, classDescriber, rendered);
+        if (render) {
+            renderParameterClassFields(fileWriter, classDescriber);
+        }
         renderExtendClass(fileWriter, classDescriber, rendered);
     }
 

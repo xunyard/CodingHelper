@@ -1,5 +1,6 @@
-package cn.xunyard.idea.coding.log;
+package cn.xunyard.idea.coding.log.window;
 
+import cn.xunyard.idea.coding.log.Logger;
 import cn.xunyard.idea.coding.util.ProjectUtils;
 import lombok.RequiredArgsConstructor;
 
@@ -39,5 +40,10 @@ public class WindowLogger extends AbstractThreadBasedWindowedLogger implements L
     @Override
     public void error(String format, Object... args) {
         submitLog(buildLogMessage(LogOperation.ERROR, format, args));
+    }
+
+    @Override
+    public void done() {
+        submitLog(buildLogMessage(LogOperation.DONE, null));
     }
 }

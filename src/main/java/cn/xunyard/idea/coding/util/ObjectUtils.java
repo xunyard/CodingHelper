@@ -63,6 +63,7 @@ public class ObjectUtils {
             return str;
         }
 
+        str = str.trim();
         if (str.startsWith("\"")) {
             return str.substring(1, str.length() - 1);
         }

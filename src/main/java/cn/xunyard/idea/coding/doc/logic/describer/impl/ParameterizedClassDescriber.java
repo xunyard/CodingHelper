@@ -1,6 +1,6 @@
 package cn.xunyard.idea.coding.doc.logic.describer.impl;
 
-import cn.xunyard.idea.coding.doc.ClassUtils;
+import cn.xunyard.idea.coding.doc.logic.ClassUtils;
 import cn.xunyard.idea.coding.doc.logic.describer.ClassDescriber;
 import cn.xunyard.idea.coding.doc.logic.describer.FieldDescriber;
 import cn.xunyard.idea.coding.doc.logic.describer.ParameterizedClass;

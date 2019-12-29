@@ -1,4 +1,4 @@
-package cn.xunyard.idea.coding.log;
+package cn.xunyard.idea.coding.log.window;
 
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.ui.ConsoleView;
@@ -16,25 +16,16 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract class AbstractWindowedLogger {
     private static final String TOOL_WINDOW_ID = "Coding Helper";
-    private static ToolWindow TOOL_WINDOW;
-    // 标记上一次的返回结果，以快速返回相同结果
-    private static Content lastContent;
 
     protected static ConsoleView getConsoleView(@NotNull Project project, @NotNull String displayName) {
-        if (lastContent != null && lastContent.isValid() && lastContent.getDisplayName().equals(displayName)) {
-            return (ConsoleView) lastContent.getComponent();
-        }
-
         ToolWindow toolWindow = getToolWindow(project);
         Content content = getContent(toolWindow, displayName);
 
-        if (content != null) {
-            lastContent = content;
-        } else {
-            lastContent = buildContent(project, displayName, toolWindow.getContentManager());
+        if (content == null) {
+            content = buildContent(project, displayName, toolWindow.getContentManager());
         }
 
-        return (ConsoleView) lastContent.getComponent();
+        return (ConsoleView) content.getComponent();
     }
 
     private static Content getContent(ToolWindow toolWindow, String displayName) {
@@ -62,24 +53,27 @@ public abstract class AbstractWindowedLogger {
     }
 
     private static ToolWindow getToolWindow(@NotNull Project project) {
-        if (TOOL_WINDOW != null) {
-            if (!TOOL_WINDOW.isActive()) {
-                TOOL_WINDOW.activate(null);
-            }
-
-            return TOOL_WINDOW;
-        }
-
         ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
-        TOOL_WINDOW = toolWindowManager.getToolWindow(TOOL_WINDOW_ID);
-        if (TOOL_WINDOW == null) {
-            TOOL_WINDOW = toolWindowManager.registerToolWindow(TOOL_WINDOW_ID, true, ToolWindowAnchor.BOTTOM);
+        ToolWindow toolWindow = toolWindowManager.getToolWindow(TOOL_WINDOW_ID);
+
+        if (toolWindow == null) {
+            toolWindow = toolWindowManager.registerToolWindow(TOOL_WINDOW_ID, true, ToolWindowAnchor.BOTTOM);
+            toolWindow.activate(null);
         }
 
-        if (!TOOL_WINDOW.isActive()) {
-            TOOL_WINDOW.activate(null);
+        return toolWindow;
+    }
+
+    public static void activeToolWindow(@NotNull Project project) {
+        ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
+        ToolWindow toolWindow = toolWindowManager.getToolWindow(TOOL_WINDOW_ID);
+
+        if (toolWindow == null) {
+            toolWindow = toolWindowManager.registerToolWindow(TOOL_WINDOW_ID, true, ToolWindowAnchor.BOTTOM);
         }
 
-        return TOOL_WINDOW;
+        if (!toolWindow.isActive()) {
+            toolWindow.activate(null);
+        }
     }
 }

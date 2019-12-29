@@ -1,6 +1,5 @@
 package cn.xunyard.idea.coding.doc.logic;
 
-import cn.xunyard.idea.coding.doc.DocConfig;
 import cn.xunyard.idea.coding.doc.logic.maker.ClassDescriberMaker;
 import cn.xunyard.idea.coding.doc.logic.maker.MethodDescriberMaker;
 import cn.xunyard.idea.coding.doc.logic.maker.ServiceDescriberMaker;

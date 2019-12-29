@@ -1,4 +1,4 @@
-package cn.xunyard.idea.coding.log;
+package cn.xunyard.idea.coding.log.window;
 
 /**
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
@@ -9,5 +9,6 @@ public enum LogOperation {
     DEBUG,
     INFO,
     WARN,
-    ERROR
+    ERROR,
+    DONE
 }

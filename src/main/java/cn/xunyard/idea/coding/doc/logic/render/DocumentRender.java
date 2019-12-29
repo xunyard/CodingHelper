@@ -1,8 +1,7 @@
-package cn.xunyard.idea.coding.doc;
+package cn.xunyard.idea.coding.doc.logic.render;
 
+import cn.xunyard.idea.coding.doc.logic.DocConfig;
 import cn.xunyard.idea.coding.doc.logic.ProcessContext;
-import cn.xunyard.idea.coding.doc.logic.builder.ParameterRender;
-import cn.xunyard.idea.coding.doc.logic.builder.ResponseRender;
 import cn.xunyard.idea.coding.doc.logic.describer.MethodDescriber;
 import cn.xunyard.idea.coding.doc.logic.describer.ServiceDescriber;
 import cn.xunyard.idea.coding.log.Logger;
@@ -19,7 +18,7 @@ import java.util.List;
  * @date 2019-12-21
  */
 @RequiredArgsConstructor
-public class ServiceDocumentBuilder {
+public class DocumentRender {
     private final Logger log = LoggerFactory.getLogger(DocConfig.IDENTITY);
     private final ProcessContext processContext;
     private final List<ServiceDescriber> serviceDescriberList;

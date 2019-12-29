@@ -1,4 +1,4 @@
-package cn.xunyard.idea.coding.doc;
+package cn.xunyard.idea.coding.doc.logic;
 
 import lombok.Getter;
 import lombok.Setter;
