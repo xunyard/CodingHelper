@@ -1,7 +1,6 @@
 package cn.xunyard.idea.coding.doc.logic.maker;
 
 import cn.xunyard.idea.coding.doc.logic.ClassUtils;
-import cn.xunyard.idea.coding.doc.logic.DocConfig;
 import cn.xunyard.idea.coding.doc.logic.ProcessContext;
 import cn.xunyard.idea.coding.doc.logic.describer.ClassDescriber;
 import cn.xunyard.idea.coding.doc.logic.describer.FieldDescriber;
@@ -18,7 +17,6 @@ import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaParameterizedType;
 import com.thoughtworks.qdox.model.JavaType;
 import com.thoughtworks.qdox.model.impl.DefaultJavaParameterizedType;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,16 +29,13 @@ import java.util.*;
  */
 @RequiredArgsConstructor
 public class ClassDescriberMaker {
-    private final Logger log = LoggerFactory.getLogger(DocConfig.IDENTITY);
+    private final Logger log = LoggerFactory.getLogger(ProcessContext.IDENTITY);
     private final Map<String, ClassDescriber> classDescriberMap = new HashMap<>();
-    @Getter
-    private final Set<String> knownParameterizedTypeSet = new HashSet<>();
     private final ProcessContext processContext;
     private final LinkedList<String> recursionClassFullName = new LinkedList<>();
 
     public void clear() {
         classDescriberMap.clear();
-        knownParameterizedTypeSet.clear();
     }
 
     public ClassDescriber simpleFromClass(@NotNull String filepath) {
@@ -53,7 +48,7 @@ public class ClassDescriberMaker {
     @NotNull
     public ClassDescriber fromClass(@NotNull JavaClass javaClass) {
         // 第一次调用不会为空
-        return fromClassCore(javaClass);
+        return Objects.requireNonNull(fromClassCore(javaClass));
     }
 
     @Nullable
@@ -181,7 +176,7 @@ public class ClassDescriberMaker {
 
             if (apiModelProperty == null) {
                 ServiceResolver.setResolveFail();
-                if (processContext.getDocConfig().getLogUnresolved()) {
+                if (processContext.getConfiguration().isLogUnresolved()) {
                     log.error("[注释缺失] 属性: " + javaClass.getName() + "#" + field.getName() + " 未找到有效注解");
                 }
                 apiModelProperty = new ApiModelProperty(null, null, false);
@@ -221,27 +216,6 @@ public class ClassDescriberMaker {
     }
 
     private ClassDescriber getOrLoadParameterizedClass(DefaultJavaParameterizedType javaClass) {
-        String classFullName = javaClass.toString();
-
-        if (knownParameterizedTypeSet.contains(classFullName)) {
-            List<JavaType> actualTypeArguments = javaClass.getActualTypeArguments();
-
-            if (actualTypeArguments.size() > 1) {
-                throw new IllegalArgumentException("customized parameterized type allow only one parameter");
-            }
-
-            String fullName = actualTypeArguments.get(0).getValue();
-            ClassDescriber classDescriber = classDescriberMap.get(fullName);
-
-            if (classDescriber == null) {
-                JavaClass typeClass = processContext.getSourceClassLoader().find(fullName);
-                classDescriber = fromClassCore(typeClass);
-                classDescriberMap.putIfAbsent(fullName, classDescriber);
-            }
-
-            return classDescriber;
-        }
-
         List<ClassDescriber> parametrizedList = new LinkedList<>();
         for (JavaType typeArgument : javaClass.getActualTypeArguments()) {
             if (ClassUtils.isBasicType(typeArgument)) {

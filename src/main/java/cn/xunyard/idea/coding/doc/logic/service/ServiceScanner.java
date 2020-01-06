@@ -1,7 +1,6 @@
 package cn.xunyard.idea.coding.doc.logic.service;
 
 import cn.xunyard.idea.coding.doc.logic.ClassUtils;
-import cn.xunyard.idea.coding.doc.logic.DocConfig;
 import cn.xunyard.idea.coding.doc.logic.ProcessContext;
 import cn.xunyard.idea.coding.doc.logic.describer.ClassDescriber;
 import cn.xunyard.idea.coding.log.Logger;
@@ -11,16 +10,16 @@ import com.google.common.base.Joiner;
 import com.thoughtworks.qdox.model.JavaClass;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
  * @date 2019-12-15
  */
 public class ServiceScanner {
-    private final Logger log = LoggerFactory.getLogger(DocConfig.IDENTITY);
+    private final Logger log = LoggerFactory.getLogger(ProcessContext.IDENTITY);
     private final ProcessContext processContext;
     private final String serviceSuffix;
     private final String packagePrefix;
@@ -29,8 +28,8 @@ public class ServiceScanner {
 
     public ServiceScanner(ProcessContext processContext) {
         this.processContext = processContext;
-        this.serviceSuffix = wrapService(processContext.getDocConfig().getServiceSuffix());
-        this.packagePrefix = wrapPackage(processContext.getDocConfig().getPackagePrefix());
+        this.serviceSuffix = wrapService(processContext.getConfiguration().getServiceSuffix());
+        this.packagePrefix = wrapPackage(processContext.getConfiguration().getPackagePrefix());
 
         this.scannedServices = new LinkedList<>();
     }
@@ -55,14 +54,14 @@ public class ServiceScanner {
         return suffix;
     }
 
-    public List<JavaClass> scan(String basePath) throws IOException {
+    public List<JavaClass> scan(String basePath) {
         log.info("开始扫描服务类...");
         scanPath(basePath);
         log.info(String.format("扫描完成!共发现%d个服务", scannedServices.size()));
         return scannedServices;
     }
 
-    private void scanPath(String path) throws IOException {
+    private void scanPath(String path) {
         File file = new File(path);
 
         if (file.isDirectory()) {
@@ -91,7 +90,7 @@ public class ServiceScanner {
             }
             ClassDescriber classDescriber = processContext.getClassDescriberMaker().simpleFromClass(path);
 
-            if (!AssertUtils.isEmpty(packagePrefix)  && !classDescriber.getPackage().startsWith(packagePrefix)) {
+            if (!AssertUtils.isEmpty(packagePrefix) && !Objects.requireNonNull(classDescriber.getPackage()).startsWith(packagePrefix)) {
                 return;
             }
 
@@ -101,7 +100,7 @@ public class ServiceScanner {
 
             scannedServices.addAll(javaClasses);
 
-            if (processContext.getDocConfig().getLogServiceDetail()) {
+            if (processContext.getConfiguration().isLogServiceDetail()) {
                 log.info("发现服务:" + classDescriber.getPackage() + "/" + classDescriber.getSimpleName());
             }
         }

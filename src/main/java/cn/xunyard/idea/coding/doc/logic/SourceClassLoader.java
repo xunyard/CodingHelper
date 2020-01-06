@@ -18,7 +18,7 @@ import java.util.Map;
  * @date 2019-12-24
  */
 public class SourceClassLoader {
-    private final Logger log = LoggerFactory.getLogger(DocConfig.IDENTITY);
+    private final Logger log = LoggerFactory.getLogger(ProcessContext.IDENTITY);
     private final Map<String, JavaClass> loadedJavaClassMap;
     private final JavaProjectBuilder javaProjectBuilder;
 

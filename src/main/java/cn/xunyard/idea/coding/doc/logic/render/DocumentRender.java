@@ -1,6 +1,5 @@
 package cn.xunyard.idea.coding.doc.logic.render;
 
-import cn.xunyard.idea.coding.doc.logic.DocConfig;
 import cn.xunyard.idea.coding.doc.logic.ProcessContext;
 import cn.xunyard.idea.coding.doc.logic.describer.MethodDescriber;
 import cn.xunyard.idea.coding.doc.logic.describer.ServiceDescriber;
@@ -19,7 +18,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 public class DocumentRender {
-    private final Logger log = LoggerFactory.getLogger(DocConfig.IDENTITY);
+    private final Logger log = LoggerFactory.getLogger(ProcessContext.IDENTITY);
     private final ProcessContext processContext;
     private final List<ServiceDescriber> serviceDescriberList;
     private final ParameterRender parameterRender = new ParameterRender();
@@ -27,8 +26,8 @@ public class DocumentRender {
 
     public void run() throws IOException {
         log.info("开始生成文档...");
-        String filepath = processContext.getDocConfig().getOutputDirectory() + "/" +
-                processContext.getDocConfig().getOutputFileName();
+        String filepath = processContext.getConfiguration().getOutputDirectory() + "/" +
+                processContext.getConfiguration().getOutputFileName();
         try (FileWriter fileWriter = new FileWriter(filepath, true)) {
             for (ServiceDescriber serviceDescriber : serviceDescriberList) {
                 renderService(fileWriter, serviceDescriber);

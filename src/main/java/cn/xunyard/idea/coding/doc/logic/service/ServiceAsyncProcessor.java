@@ -1,6 +1,6 @@
 package cn.xunyard.idea.coding.doc.logic.service;
 
-import cn.xunyard.idea.coding.doc.logic.DocConfig;
+import cn.xunyard.idea.coding.doc.logic.DocumentBuilderConfiguration;
 import cn.xunyard.idea.coding.doc.logic.ProcessContext;
 import cn.xunyard.idea.coding.doc.logic.render.DocumentRender;
 import cn.xunyard.idea.coding.log.Logger;
@@ -23,15 +23,15 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 public class ServiceAsyncProcessor implements Runnable {
-    private final Logger log = LoggerFactory.getLogger(DocConfig.IDENTITY);
-    private final DocConfig docConfig;
+    private final Logger log = LoggerFactory.getLogger(ProcessContext.IDENTITY);
+    private final DocumentBuilderConfiguration configuration;
     private final Project project;
-    private final Consumer<DocConfig> doneCallBack;
+    private final Consumer<DocumentBuilderConfiguration> doneCallBack;
 
     @Override
     public void run() {
         run(project.getBasePath());
-        doneCallBack.accept(docConfig);
+        doneCallBack.accept(configuration);
     }
 
     public void run(String basePath) {
@@ -39,7 +39,7 @@ public class ServiceAsyncProcessor implements Runnable {
             return;
         }
 
-        ProcessContext processContext = new ProcessContext(docConfig);
+        ProcessContext processContext = new ProcessContext(configuration);
         try {
             processContext.init();
 
@@ -51,7 +51,7 @@ public class ServiceAsyncProcessor implements Runnable {
             }
 
             ServiceResolver serviceResolver = new ServiceResolver(serviceJavaClassList, processContext);
-            if (!serviceResolver.run() && !docConfig.getAllowInfoMissing()) {
+            if (!serviceResolver.run() && !configuration.isAllowInfoMissing()) {
                 log.error("过程终止，修复注释缺失问题或者打开忽略开关以继续!");
                 return;
             }
@@ -73,7 +73,7 @@ public class ServiceAsyncProcessor implements Runnable {
     }
 
     private boolean checkOutput() {
-        String outputDirectory = docConfig.getOutputDirectory();
+        String outputDirectory = configuration.getOutputDirectory();
         File file = new File(outputDirectory);
         try {
             if (!file.exists() || !file.isDirectory()) {
@@ -81,7 +81,7 @@ public class ServiceAsyncProcessor implements Runnable {
                 return false;
             }
 
-            String fullPath = outputDirectory + "/" + docConfig.getOutputFileName();
+            String fullPath = outputDirectory + "/" + configuration.getOutputFileName();
             File outputFile = new File(fullPath);
             if (outputFile.exists()) {
                 log.warn("检测到输出文件已存在，删除!");
