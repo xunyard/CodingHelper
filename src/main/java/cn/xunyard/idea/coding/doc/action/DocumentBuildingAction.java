@@ -1,5 +1,6 @@
 package cn.xunyard.idea.coding.doc.action;
 
+import cn.xunyard.idea.coding.doc.DocumentBuilderSettings;
 import cn.xunyard.idea.coding.doc.dialog.BuilderDialogWrapper;
 import cn.xunyard.idea.coding.doc.logic.DocumentBuilderConfiguration;
 import cn.xunyard.idea.coding.doc.logic.DocumentBuildingService;
@@ -13,12 +14,17 @@ import com.intellij.openapi.project.Project;
  * @date 2019-12-15
  */
 public class DocumentBuildingAction extends AnAction {
-    private final DocumentBuilderConfiguration documentBuilderConfiguration = new DocumentBuilderConfiguration();
+    private DocumentBuilderConfiguration documentBuilderConfiguration = DocumentBuilderSettings.getInstance().getState();
 
     @Override
     public void actionPerformed(AnActionEvent event) {
         final Project project = event.getProject();
         ProjectUtils.switchProject(project);
+        if (documentBuilderConfiguration == null) {
+            documentBuilderConfiguration = new DocumentBuilderConfiguration();
+            DocumentBuilderSettings.getInstance().loadState(documentBuilderConfiguration);
+        }
+
         BuilderDialogWrapper dialogWrapper = new BuilderDialogWrapper(project, documentBuilderConfiguration);
         if (dialogWrapper.showAndGet()) {
             process(documentBuilderConfiguration);

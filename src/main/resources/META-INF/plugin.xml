@@ -8,13 +8,16 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="cn.xunyard.idea.coding.doc.DocumentBuilderSettings"/>
     </extensions>
+
 
     <actions>
         <group id="cn.xunyard.coding.GroupActions" text="Coding Helper" popup="true">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
 
-            <action id="cn.xunyard.doc" class="cn.xunyard.idea.coding.doc.action.DocumentBuildingAction" text="Build Service Document"
+            <action id="cn.xunyard.doc" class="cn.xunyard.idea.coding.doc.action.DocumentBuildingAction"
+                    text="Build Service Document"
                     description="A simple tool for service document building.">
             </action>
         </group>

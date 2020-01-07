@@ -57,7 +57,7 @@ public class MethodDescriberMaker {
             String name = javaParameter.getName();
             JavaType parameterType = javaParameter.getType();
 
-            JavaClass javaClass = processContext.getSourceClassLoader().find(parameterType.toString());
+            JavaClass javaClass = processContext.getSourceClassLoader().find(parameterType);
             ClassDescriber classDescriber;
 
 

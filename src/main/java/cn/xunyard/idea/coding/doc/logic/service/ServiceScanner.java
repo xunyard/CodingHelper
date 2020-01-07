@@ -55,13 +55,20 @@ public class ServiceScanner {
     }
 
     public List<JavaClass> scan(String basePath) {
+        if (!AssertUtils.isEmpty(processContext.getConfiguration().getSourceInclude())) {
+            log.info("开始读取源文件工程...");
+            for (String path : processContext.getConfiguration().getSourceInclude()) {
+                scanForClassLoader(path);
+            }
+        }
+
         log.info("开始扫描服务类...");
-        scanPath(basePath);
+        scanSearchService(basePath);
         log.info(String.format("扫描完成!共发现%d个服务", scannedServices.size()));
         return scannedServices;
     }
 
-    private void scanPath(String path) {
+    private void scanForClassLoader(String path) {
         File file = new File(path);
 
         if (file.isDirectory()) {
@@ -72,7 +79,7 @@ public class ServiceScanner {
             }
 
             for (String child : children) {
-                scanPath(path + "/" + child);
+                scanForClassLoader(path + "/" + child);
             }
         } else {
             if (!file.exists()) {
@@ -80,7 +87,34 @@ public class ServiceScanner {
                 throw new IllegalArgumentException("invalid.file.path");
             }
 
-            if (!path.endsWith(".java") || !ClassUtils.isSrcClass(path)) {
+            if (!path.endsWith(processContext.getConfiguration().getFileSuffix()) || !ClassUtils.isSrcClass(path)) {
+                return;
+            }
+
+            processContext.getSourceClassLoader().loadClass(path);
+        }
+    }
+
+    private void scanSearchService(String path) {
+        File file = new File(path);
+
+        if (file.isDirectory()) {
+            String[] children = file.list();
+
+            if (children == null) {
+                return;
+            }
+
+            for (String child : children) {
+                scanSearchService(path + "/" + child);
+            }
+        } else {
+            if (!file.exists()) {
+                log.error("检测到无效文件地址:" + path);
+                throw new IllegalArgumentException("invalid.file.path");
+            }
+
+            if (!path.endsWith(processContext.getConfiguration().getFileSuffix()) || !ClassUtils.isSrcClass(path)) {
                 return;
             }
 

@@ -10,7 +10,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.TitledSeparator;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.JBUI;
 import org.jdesktop.swingx.VerticalLayout;
 
@@ -165,6 +164,7 @@ public class BuilderTutorial extends JPanel {
 
             // 接口后缀匹配
             JTextField suffixTextField = BindingTextField.BindingTextFieldBuilder.from(configuration::setServiceSuffix)
+                    .enable(false)
                     .text(configuration.getServiceSuffix())
                     .build();
 
@@ -173,6 +173,7 @@ public class BuilderTutorial extends JPanel {
 
             // 包路径前缀匹配
             JTextField prefixTextField = BindingTextField.BindingTextFieldBuilder.from(configuration::setPackagePrefix)
+                    .enable(false)
                     .text(configuration.getPackagePrefix())
                     .build();
 
@@ -187,17 +188,24 @@ public class BuilderTutorial extends JPanel {
     }
 
     private void renderReturn() {
-        JPanel container = createContainer("返回包装配置");
+        JPanel container = createContainer("源代码路径配置");
         JPanel holder = createHolder(container);
 
-        JScrollPane scrollPane = new JBScrollPane();
-        scrollPane.setPreferredSize(new Dimension(19, 86));
-        scrollPane.setMaximumSize(new Dimension(560, 86));
-        returnPackTextArea = new JTextArea("java.util.List");
-        scrollPane.setViewportView(returnPackTextArea);
+        BindingListWithAdd bindingListWithAdd = BindingListWithAdd.BindingListWithAddBuilder
+                .from(configuration::setSourceInclude)
+                .init(configuration.getSourceInclude())
+                .build();
+        bindingListWithAdd.setAddActionListener(e -> {
+            VirtualFile virtualFile = FileChooser.chooseFile(FileChooserDescriptorFactory.createSingleFolderDescriptor(),
+                    project, null);
 
-        addHolderContent(holder, scrollPane, 0);
+            if (virtualFile != null) {
+                bindingListWithAdd.addPath(virtualFile.getPath());
+            }
+        });
 
+        bindingListWithAdd.setPreferredSize(new Dimension(560, 86));
+        addHolderContent(holder, bindingListWithAdd, 0);
         this.add(container);
     }
 
@@ -247,7 +255,6 @@ public class BuilderTutorial extends JPanel {
                     groupPanel, 2);
 
             addHolderContent(holder, groupPanel, 0);
-            addHolderContent(holder, new BindingListWithAdd(), 1);
         }
 
         this.add(container);

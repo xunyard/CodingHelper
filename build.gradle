@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'cn.xunyard'
-version '1.2.0.M3'
+version '1.3.0'
 
 sourceCompatibility = 1.8
 
@@ -32,6 +32,8 @@ patchPluginXml {
       1.1.0<br>
       Made big refactor and fix most problem of document file render<br>
       1.2.0<br>
-      Fix display detail and group the enter of tool"""
+      Fix display detail and group the enter of tool<br>
+      1.3.0<br>
+      Support configuration save and support choose source as dependency"""
     sinceBuild 182
 }

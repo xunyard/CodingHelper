@@ -205,7 +205,7 @@ public class ClassDescriberMaker {
             return fieldAssociated;
         }
 
-        JavaClass superClass = processContext.getSourceClassLoader().find(superClassType.getValue());
+        JavaClass superClass = processContext.getSourceClassLoader().find(superClassType);
         if (superClass != null) {
             return buildClassFieldsCore(superClass, fieldAssociated);
         } else {
@@ -223,7 +223,7 @@ public class ClassDescriberMaker {
                 continue;
             }
 
-            JavaClass typeClass = processContext.getSourceClassLoader().find(typeArgument.toString());
+            JavaClass typeClass = processContext.getSourceClassLoader().find(typeArgument);
 
             if (typeClass == null) {
                 if (typeArgument instanceof JavaClass) {
