@@ -1,6 +1,7 @@
 package cn.xunyard.idea.coding.doc.dialog;
 
 import cn.xunyard.idea.coding.dialog.BindingCheckBox;
+import cn.xunyard.idea.coding.dialog.BindingListWithAdd;
 import cn.xunyard.idea.coding.dialog.BindingTextField;
 import cn.xunyard.idea.coding.doc.logic.DocumentBuilderConfiguration;
 import com.intellij.openapi.fileChooser.FileChooser;
@@ -246,6 +247,7 @@ public class BuilderTutorial extends JPanel {
                     groupPanel, 2);
 
             addHolderContent(holder, groupPanel, 0);
+            addHolderContent(holder, new BindingListWithAdd(), 1);
         }
 
         this.add(container);
