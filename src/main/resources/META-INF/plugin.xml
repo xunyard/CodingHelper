@@ -6,11 +6,20 @@
     <description><![CDATA[A tool for coding help such as service document building]]></description>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="cn.xunyard.idea.coding.doc.DocumentBuilderSettings"/>
+        <localInspection language="JAVA"
+                         displayName="I18n: error code without target translate"
+                         groupPath="Java"
+                         groupBundle="messages.InspectionsBundle"
+                         groupKey="group.names.internationalization.issues"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="cn.xunyard.idea.coding.i18n.inspection.ErrorCodeWithoutTranslateInspection"
+                         />
     </extensions>
-
 
     <actions>
         <group id="cn.xunyard.coding.GroupActions" text="Coding Helper" popup="true">
