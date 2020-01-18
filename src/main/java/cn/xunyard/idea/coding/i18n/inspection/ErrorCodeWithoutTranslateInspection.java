@@ -1,5 +1,6 @@
 package cn.xunyard.idea.coding.i18n.inspection;
 
+import cn.xunyard.idea.coding.i18n.logic.TranslateProcessContext;
 import com.intellij.codeInspection.AbstractBaseJavaLocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
@@ -14,6 +15,6 @@ public class ErrorCodeWithoutTranslateInspection extends AbstractBaseJavaLocalIn
     @NotNull
     @Override
     public PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
-        return new InspectionPsiElementVisitor(holder);
+        return new InspectionPsiElementVisitor(holder, TranslateProcessContext.getInstance(holder.getProject()).getLanguageTranslate());
     }
 }

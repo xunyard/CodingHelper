@@ -191,7 +191,7 @@ public class BuilderTutorial extends JPanel {
         JPanel container = createContainer("源代码路径配置");
         JPanel holder = createHolder(container);
 
-        BindingListWithAdd bindingListWithAdd = BindingListWithAdd.BindingListWithAddBuilder
+        BindingListWithAdd<String> bindingListWithAdd = BindingListWithAdd.BindingListWithAddBuilder
                 .from(configuration::setSourceInclude)
                 .init(configuration.getSourceInclude())
                 .build();
@@ -200,7 +200,7 @@ public class BuilderTutorial extends JPanel {
                     project, null);
 
             if (virtualFile != null) {
-                bindingListWithAdd.addPath(virtualFile.getPath());
+                bindingListWithAdd.addData(virtualFile.getPath());
             }
         });
 

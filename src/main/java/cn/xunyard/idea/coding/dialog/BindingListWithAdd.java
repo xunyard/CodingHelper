@@ -1,5 +1,6 @@
 package cn.xunyard.idea.coding.dialog;
 
+import cn.xunyard.idea.coding.util.AssertUtils;
 import cn.xunyard.idea.coding.util.ObjectUtils;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.ui.Messages;
@@ -9,7 +10,6 @@ import com.intellij.ui.components.JBScrollPane;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.jdesktop.swingx.VerticalLayout;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -19,6 +19,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -26,24 +27,27 @@ import java.util.function.Consumer;
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
  * @date 2020-01-07
  */
-public class BindingListWithAdd extends JPanel {
+public class BindingListWithAdd<T> extends JPanel {
 
     private JScrollPane scrollPane;
-    private JBList<String> jbList;
+    private JBList<T> jbList;
     private JPanel buttonPanel;
     private Integer selectedIndex;
     private LabelMouseListener addMouseListener;
     private LabelMouseListener removeMouseListener;
-    private final List<String> listData;
+    private List<T> listData;
+    @Nullable
+    private Consumer<List<T>> setter;
 
-    public BindingListWithAdd(@NotNull List<String> listData) {
-        this.listData = listData;
+    public BindingListWithAdd(@Nullable Consumer<List<T>> setter) {
+        this.listData = new ArrayList<>();
+        this.setter = setter;
         initComponent();
     }
 
     private void addList() {
         jbList = new JBList<>();
-        jbList.setModel(new DataModel(listData));
+        jbList.setModel(new DataModel<>(listData));
         scrollPane = new JBScrollPane(jbList);
         this.add(scrollPane);
     }
@@ -91,26 +95,43 @@ public class BindingListWithAdd extends JPanel {
         addMouseListener.setActionListener(listener);
     }
 
-    public void addPath(String path) {
-        if (listData.contains(path)) {
-            Messages.showMessageDialog(String.format("选择路径 %s 重复", path), "添加路径错误", Messages.getErrorIcon());
+    public void setData(Collection<T> data) {
+        if (AssertUtils.isEmpty(data)) {
+            this.listData = new ArrayList<>();
+        } else {
+            this.listData = new ArrayList<>(data);
+        }
+        jbList.setModel(new DataModel<>(listData));
+        jbList.ensureIndexIsVisible(listData.size() - 1);
+    }
+
+    public void addData(T data) {
+        if (listData.contains(data)) {
+            Messages.showMessageDialog(String.format("%s 重复", data), "添加数据错误", Messages.getErrorIcon());
             return;
         }
 
-        listData.add(path);
-        jbList.setModel(new DataModel(listData));
+
+        listData.add(data);
+        jbList.setModel(new DataModel<>(listData));
         jbList.ensureIndexIsVisible(listData.size() - 1);
+        if (setter != null) {
+            setter.accept(listData);
+        }
+    }
+
+    public List<T> getData() {
+        return this.listData;
     }
 
     private void deleteData(ActionEvent e) {
         if (selectedIndex != null) {
             listData.remove(selectedIndex.intValue());
-            jbList.setModel(new DataModel(listData));
+            jbList.setModel(new DataModel<>(listData));
             selectedIndex = null;
             removeMouseListener.setAllowRender(false);
         }
     }
-
 
     @Override
     public void setPreferredSize(Dimension preferredSize) {
@@ -182,9 +203,9 @@ public class BindingListWithAdd extends JPanel {
     }
 
     @RequiredArgsConstructor
-    private static final class DataModel extends AbstractListModel<String> {
+    private static final class DataModel<T> extends AbstractListModel<T> {
 
-        private final List<String> listData;
+        private final List<T> listData;
 
         @Override
         public int getSize() {
@@ -192,41 +213,55 @@ public class BindingListWithAdd extends JPanel {
         }
 
         @Override
-        public String getElementAt(int index) {
+        public T getElementAt(int index) {
             return listData.get(index);
         }
     }
 
-    public static final class BindingListWithAddBuilder {
-        private final Consumer<List<String>> setter;
-        private List<String> init;
+    public static final class BindingListWithAddBuilder<T> {
+        private Consumer<List<T>> setter;
+        private List<T> init;
         private ActionListener listener;
 
-        private BindingListWithAddBuilder(Consumer<List<String>> setter) {
+        private BindingListWithAddBuilder(Consumer<List<T>> setter) {
             this.setter = setter;
         }
 
-        public BindingListWithAddBuilder init(List<String> init) {
+        private BindingListWithAddBuilder(List<T> init) {
+            this.init = init;
+        }
+
+        private BindingListWithAddBuilder() {
+        }
+
+        public BindingListWithAddBuilder<T> init(List<T> init) {
             this.init = init;
             return this;
         }
 
-        public BindingListWithAddBuilder addListener(ActionListener listener) {
+        public BindingListWithAddBuilder<T> addListener(ActionListener listener) {
             this.listener = listener;
             return this;
         }
 
-        public BindingListWithAdd build() {
-            List<String> listData = ObjectUtils.firstNonNull(init, ArrayList::new);
-            setter.accept(listData);
-            BindingListWithAdd bindingListWithAdd = new BindingListWithAdd(listData);
+        public BindingListWithAdd<T> build() {
+            List<T> listData = ObjectUtils.firstNonNull(init, ArrayList::new);
+            BindingListWithAdd<T> bindingListWithAdd = new BindingListWithAdd<>(setter);
+            bindingListWithAdd.setData(listData);
             bindingListWithAdd.setAddActionListener(listener);
             return bindingListWithAdd;
         }
 
+        public static <T> BindingListWithAddBuilder<T> from(Consumer<List<T>> setter) {
+            return new BindingListWithAddBuilder<>(setter);
+        }
 
-        public static BindingListWithAddBuilder from(Consumer<List<String>> setter) {
-            return new BindingListWithAddBuilder(setter);
+        public static <T> BindingListWithAddBuilder<T> from(List<T> init) {
+            return new BindingListWithAddBuilder<>(init);
+        }
+
+        public static <T> BindingListWithAddBuilder<T> from() {
+            return new BindingListWithAddBuilder<>();
         }
     }
 }

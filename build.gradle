@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'cn.xunyard'
-version '1.3.0'
+version '1.4.0.1.alpha'
 
 sourceCompatibility = 1.8
 
@@ -36,6 +36,8 @@ patchPluginXml {
       1.2.0<br>
       Fix display detail and group the enter of tool<br>
       1.3.0<br>
-      Support configuration save and support choose source as dependency"""
+      Support configuration save and support choose source as dependency<br>
+      1.4.0<br>
+      A new function of i18n error code translate find and set<br>"""
     sinceBuild 182
 }

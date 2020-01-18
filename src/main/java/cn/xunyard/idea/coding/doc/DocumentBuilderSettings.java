@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
  * @date 2020-01-07
  */
-@State(name = "DocumentBuilderSettings", storages = @Storage("document.builder.settings.xml"))
+@State(name = "DocumentBuilderSettings", storages = @Storage("xunyard.document.settings.xml"))
 public class DocumentBuilderSettings implements PersistentStateComponent<DocumentBuilderConfiguration> {
 
     private DocumentBuilderConfiguration documentBuilderConfiguration;
