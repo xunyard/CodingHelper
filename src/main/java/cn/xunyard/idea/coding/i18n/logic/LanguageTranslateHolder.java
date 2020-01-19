@@ -49,7 +49,7 @@ public class LanguageTranslateHolder {
         try {
             File file = new File(filepath);
             if (!file.exists()) {
-                throw new RuntimeException(String.format("文件%s不存在", filepath));
+                return;
             }
 
             try (FileReader fileReader = new FileReader(file)) {
@@ -73,9 +73,6 @@ public class LanguageTranslateHolder {
             return;
         }
 
-        Map<String, String> toReplace = new HashMap<>();
-        loadTranslate(toReplace);
-        this.translateMap.clear();
-        this.translateMap = toReplace;
+        loadTranslate(translateMap);
     }
 }
