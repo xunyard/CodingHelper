@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'cn.xunyard'
-version '1.4.0.2.alpha'
+version '1.4.0.3.alpha'
 
 sourceCompatibility = 1.8
 
@@ -23,7 +23,7 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2019.3'
+    version '2020.1'
     plugins 'java'
 }
 
@@ -40,4 +40,5 @@ patchPluginXml {
       1.4.0<br>
       A new function of i18n error code translate find and set<br>"""
     sinceBuild 182
+    untilBuild 201
 }
