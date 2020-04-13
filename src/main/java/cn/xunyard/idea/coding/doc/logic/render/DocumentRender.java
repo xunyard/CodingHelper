@@ -8,8 +8,8 @@ import cn.xunyard.idea.coding.log.LoggerFactory;
 import cn.xunyard.idea.coding.util.AssertUtils;
 import lombok.RequiredArgsConstructor;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -28,16 +28,21 @@ public class DocumentRender {
         log.info("开始生成文档...");
         String filepath = processContext.getConfiguration().getOutputDirectory() + "/" +
                 processContext.getConfiguration().getOutputFileName();
-        try (FileWriter fileWriter = new FileWriter(filepath, true)) {
-            for (ServiceDescriber serviceDescriber : serviceDescriberList) {
-                renderService(fileWriter, serviceDescriber);
-            }
+        try (FileOutputStream fos = new FileOutputStream(filepath, false)) {
+            try (OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
+                try (BufferedWriter bufferedWriter = new BufferedWriter(osw)) {
+                    for (ServiceDescriber serviceDescriber : serviceDescriberList) {
+                        renderService(bufferedWriter, serviceDescriber);
+                    }
 
-            log.info(String.format("文档生成完成，文档路径: %s", filepath));
+                    bufferedWriter.flush();
+                    log.info(String.format("文档生成完成，文档路径: %s", filepath));
+                }
+            }
         }
     }
 
-    private void renderService(FileWriter fileWriter, ServiceDescriber serviceDescriber) throws IOException {
+    private void renderService(BufferedWriter fileWriter, ServiceDescriber serviceDescriber) throws IOException {
         fileWriter.write(String.format("## %s\n\n", serviceDescriber.getDescription()));
 
         if (!AssertUtils.isEmpty(serviceDescriber.getNote())) {
@@ -51,7 +56,7 @@ public class DocumentRender {
         }
     }
 
-    private void renderMethod(FileWriter fileWriter, MethodDescriber methodDescriber) throws IOException {
+    private void renderMethod(BufferedWriter fileWriter, MethodDescriber methodDescriber) throws IOException {
         fileWriter.write(String.format("### %s\n", methodDescriber.getDescription()));
 
         if (!AssertUtils.isEmpty(methodDescriber.getNote())) {
