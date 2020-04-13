@@ -59,14 +59,14 @@ public class ServiceAsyncProcessor implements Runnable {
             DocumentRender documentRender = new DocumentRender(processContext, serviceResolver.getServiceDescriberList());
             documentRender.run();
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("fail to run, cause: " + formatException(e));
         } finally {
             processContext.clear();
         }
     }
 
-    private String formatException(Exception e) {
+    private String formatException(Throwable e) {
         String message = e.toString();
         String str = Arrays.stream(e.getStackTrace()).map(Objects::toString).collect(Collectors.joining("\n"));
         return message + "\n" + str;

@@ -6,6 +6,7 @@ import cn.xunyard.idea.coding.doc.logic.describer.ServiceDescriber;
 import cn.xunyard.idea.coding.log.Logger;
 import cn.xunyard.idea.coding.log.LoggerFactory;
 import cn.xunyard.idea.coding.util.AssertUtils;
+import com.google.common.base.Throwables;
 import lombok.RequiredArgsConstructor;
 
 import java.io.*;
@@ -37,8 +38,14 @@ public class DocumentRender {
 
                     bufferedWriter.flush();
                     log.info(String.format("文档生成完成，文档路径: %s", filepath));
+                } catch (Exception e) {
+                    log.error("文档生成失败: {}", Throwables.getStackTraceAsString(e));
                 }
+            } catch (Exception e) {
+                log.error("文件准备失败: {}", Throwables.getStackTraceAsString(e));
             }
+        } catch (Exception e) {
+            log.error("根节点失败: {}", Throwables.getStackTraceAsString(e));
         }
     }
 
