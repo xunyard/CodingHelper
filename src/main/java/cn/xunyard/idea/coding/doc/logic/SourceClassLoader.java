@@ -9,6 +9,9 @@ import com.thoughtworks.qdox.model.JavaType;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,19 +36,24 @@ public class SourceClassLoader {
 
     public List<JavaClass> loadClass(String filepath) {
         try {
-            JavaSource javaSource = javaProjectBuilder.addSource(new File(filepath));
-            if (javaSource == null) {
-                return null;
-            }
+            JavaSource javaSource;
+            try (FileInputStream fis = new FileInputStream(new File(filepath))) {
+                try (InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8)) {
+                    javaSource = javaProjectBuilder.addSource(isr);
 
-            List<JavaClass> javaClassList = javaSource.getClasses();
-            for (JavaClass javaClass : javaClassList) {
-                String pkg = ClassUtils.getPackage(javaClass);
-                String simpleName = ClassUtils.getSimpleName(javaClass);
-                loadedJavaClassMap.putIfAbsent(pkg + "." + simpleName, javaClass);
-            }
+                    if (javaSource == null) {
+                        return null;
+                    }
 
-            return javaClassList;
+                    List<JavaClass> javaClassList = javaSource.getClasses();
+                    for (JavaClass javaClass : javaClassList) {
+                        String pkg = ClassUtils.getPackage(javaClass);
+                        String simpleName = ClassUtils.getSimpleName(javaClass);
+                        loadedJavaClassMap.putIfAbsent(pkg + "." + simpleName, javaClass);
+                    }
+                    return javaClassList;
+                }
+            }
         } catch (Exception e) {
             log.error("解析java类出现问题，路径: " + filepath);
             return null;
