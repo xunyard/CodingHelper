@@ -19,6 +19,8 @@ public class AddAndRemoveWrap {
     private JBLabel addLabel;
     private JBLabel removeLabel;
     private JPanel wholePanel;
+    private JButton button1;
+    private JButton button2;
     private LabelMouseListener removeLabelMouseListener;
 
     public void createUIComponents() {

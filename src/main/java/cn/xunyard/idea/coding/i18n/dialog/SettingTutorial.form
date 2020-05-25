@@ -9,7 +9,7 @@
       <maximumSize width="-1" height="-1"/>
       <minimumSize width="-1" height="-1"/>
       <opaque value="false"/>
-      <preferredSize width="500" height="320"/>
+      <preferredSize width="500" height="500"/>
     </properties>
     <border type="none"/>
     <children>
@@ -29,8 +29,8 @@
       <component id="92db9" class="cn.xunyard.idea.coding.dialog.BindingListWithAdd" binding="selectTool" custom-create="true">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
-            <minimum-size width="258" height="172"/>
-            <preferred-size width="258" height="172"/>
+            <minimum-size width="258" height="150"/>
+            <preferred-size width="258" height="250"/>
           </grid>
         </constraints>
         <properties/>
