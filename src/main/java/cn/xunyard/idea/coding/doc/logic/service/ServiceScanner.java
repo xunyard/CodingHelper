@@ -106,6 +106,11 @@ public class ServiceScanner {
             }
 
             for (String child : children) {
+                // 一些特殊路径的处理
+                switch (child) {
+                    case ".git":
+                        continue;
+                }
                 scanSearchService(path + "/" + child);
             }
         } else {

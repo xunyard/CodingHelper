@@ -41,7 +41,9 @@ public class ClassDescriberMaker {
     public ClassDescriber simpleFromClass(@NotNull String filepath) {
         String noSuffix = filepath.substring(0, filepath.lastIndexOf("."));
         String fullClassName = noSuffix.substring(noSuffix.lastIndexOf(ClassUtils.JAVA_SRC_ROOT) + ClassUtils.JAVA_SRC_ROOT.length());
-        return new BasicTypeClassDescriber(fullClassName.substring(0, fullClassName.lastIndexOf("/")),
+        // 类可能不一定有package，兼容
+        String pkg = fullClassName.contains("/") ? fullClassName.substring(0, fullClassName.lastIndexOf("/")) : "";
+        return new BasicTypeClassDescriber(pkg, pkg.isEmpty() ? fullClassName :
                 fullClassName.substring(fullClassName.lastIndexOf("/") + 1));
     }
 
