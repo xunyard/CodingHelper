@@ -1,0 +1,24 @@
+package cn.xunyard.idea.coding.doc.extend.preset.javadoc.tag
+
+import cn.xunyard.idea.coding.doc.extend.AbstractJavaDocTagExtend
+import com.thoughtworks.qdox.model.DocletTag
+
+/**
+ *
+ * @author <a herf="mailto:xunyard@gmail.com">xunyard</a>
+ * @date 2020-10-02
+ */
+class See constructor(
+        tag: DocletTag
+) : AbstractJavaDocTagExtend(tag) {
+
+    init {
+        if (getTagName() != tag.name) {
+            throw IllegalArgumentException("java.doc.tag.mismatch.with.see")
+        }
+    }
+
+    override fun getTagName(): String {
+        return "see"
+    }
+}
