@@ -1,8 +1,11 @@
 package cn.xunyard.idea.coding.doc.extend
 
+import cn.xunyard.idea.coding.doc.extend.preset.annotation.DynamicAnnotation
 import com.intellij.openapi.diagnostic.Logger
 import com.thoughtworks.qdox.model.JavaAnnotatedElement
 import com.thoughtworks.qdox.model.JavaAnnotation
+import com.thoughtworks.qdox.model.impl.DefaultJavaAnnotation
+import com.thoughtworks.qdox.model.impl.DefaultJavaClass
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.createType
@@ -24,17 +27,14 @@ class DocumentExtendManager {
         loadFromPreset()
     }
 
-    fun needConstruct(element: JavaAnnotatedElement): Boolean {
-        return false
-    }
-
-    fun <T : AnnotationExtend> constructFromAnnotation(annotation: JavaAnnotation, kClass: KClass<T>): T {
-        val construct = kClass.constructors.firstOrNull {
-            it.parameters.size == 1 &&
-                    it.parameters.size == 1 && it.parameters[0].type.isSubtypeOf(JavaAnnotation::class.createType())
+    fun constructFromAnnotation(annotation: JavaAnnotation): AnnotationExtend {
+        val name = annotation.type.name
+        if (extendConstructFactories.containsKey(name)) {
+            val construct = extendConstructFactories[name]
+            return construct!!.call(annotation)
         }
-                ?: throw java.lang.IllegalArgumentException("invalid.extend.class.construct")
-        return construct.call(annotation)
+
+        return DynamicAnnotation(annotation)
     }
 
     private fun loadFromPreset() {
@@ -51,6 +51,7 @@ class DocumentExtendManager {
             throw IllegalArgumentException("invalid.class.of.annotation.extend")
         }
 
+        // 以JavaAnnotation为入参的构造方法
         val construct = kClass.constructors.firstOrNull { it.parameters.size == 1 &&
                     it.parameters.size == 1 && it.parameters[0].type.isSubtypeOf(JavaAnnotation::class.createType())
         } ?: throw IllegalArgumentException("extend.class.should.construct.with.java.annotation.element")
