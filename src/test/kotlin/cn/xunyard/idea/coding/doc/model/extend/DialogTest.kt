@@ -1,4 +1,4 @@
-package cn.xunyard.idea.coding.doc.extend
+package cn.xunyard.idea.coding.doc.model.extend
 
 import cn.xunyard.idea.coding.doc.dialog.DocDynamicDialog
 import junit.framework.TestCase

@@ -1,6 +1,6 @@
-package cn.xunyard.idea.coding.doc.extend.preset.annotation
+package cn.xunyard.idea.coding.doc.model.extend.preset.annotation
 
-import cn.xunyard.idea.coding.doc.extend.AbstractAnnotationExtend
+import cn.xunyard.idea.coding.doc.model.extend.AbstractAnnotationExtend
 import com.thoughtworks.qdox.model.JavaAnnotation
 
 /**
@@ -8,7 +8,7 @@ import com.thoughtworks.qdox.model.JavaAnnotation
  * @author <a herf="mailto:xunyard@gmail.com">xunyard</a>
  * @date 2020-10-02
  */
-class Api constructor(
+class ApiModelProperty constructor(
         annotation: JavaAnnotation
 ) : AbstractAnnotationExtend(annotation) {
 

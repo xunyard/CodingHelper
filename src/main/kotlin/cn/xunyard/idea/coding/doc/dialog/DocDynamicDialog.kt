@@ -45,6 +45,13 @@ class DocDynamicDialog constructor(
                     button("Merge ...") {}.constraints(growX)
                     radioButton("234").constraints(growX)
                     label("").constraints(growX)
+                 }
+                cell(isVerticalFlow = true) {
+                    button("Accept Yours") {}.constraints(growX)
+                    button("Accept Theirs") {}.constraints(growX)
+                    button("Merge ...") {}.constraints(growX)
+                    radioButton("234").constraints(growX)
+                    label("").constraints(growX)
                 }
             }
         }
