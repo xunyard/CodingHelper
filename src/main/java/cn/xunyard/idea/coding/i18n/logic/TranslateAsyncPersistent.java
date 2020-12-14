@@ -7,12 +7,9 @@ import lombok.SneakyThrows;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executors;
+import java.util.concurrent.locks.LockSupport;
 
 /**
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
@@ -20,16 +17,18 @@ import java.util.concurrent.Executors;
  */
 public class TranslateAsyncPersistent {
     private static final Queue<ToPersistentPackage> persistentQueue = new ConcurrentLinkedQueue<>();
-    private static Map<String, FileWriterPackage> fileWriterMap;
+    private static final Map<String, FileWriterPackage> fileWriterMap;
+    private static final PersistentRunner runner;
 
-    static  {
+    static {
         fileWriterMap = new HashMap<>();
-        Executors.newSingleThreadExecutor().submit(new PersistentRunner());
+        runner = new PersistentRunner();
+        runner.start();
     }
 
-    private static class PersistentRunner implements Runnable {
+    private static class PersistentRunner extends Thread {
+        private volatile boolean parking = false;
 
-        @SneakyThrows
         @Override
         public void run() {
             while (true) {
@@ -40,24 +39,40 @@ public class TranslateAsyncPersistent {
                         }
                     }
 
-                    Thread.sleep(100);
-                } else {
-                    try {
-                        ToPersistentPackage toPersistentPackage;
-                        while ((toPersistentPackage = persistentQueue.poll()) != null) {
-                            String filepath = toPersistentPackage.getLanguageConfiguration().getFilepath();
-                            FileWriterPackage writerPackage = fileWriterMap.get(filepath);
-                            if (writerPackage == null) {
-                                writerPackage = new FileWriterPackage(filepath);
-                                fileWriterMap.put(filepath, writerPackage);
-                            }
-
-                            writerPackage.getFileWriter().write(String.format("%s=%s\n", toPersistentPackage.getErrorCode(), toPersistentPackage.getTranslate()));
+                    if (fileWriterMap.isEmpty()) {
+                        parking = true;
+                        LockSupport.park();
+                    } else {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            // just ignore
                         }
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
                     }
                 }
+
+                try {
+                    ToPersistentPackage toPersistentPackage;
+                    while ((toPersistentPackage = persistentQueue.poll()) != null) {
+                        String filepath = toPersistentPackage.getLanguageConfiguration().getFilepath();
+                        FileWriterPackage writerPackage = fileWriterMap.get(filepath);
+                        if (writerPackage == null) {
+                            writerPackage = new FileWriterPackage(filepath);
+                            fileWriterMap.put(filepath, writerPackage);
+                        }
+
+                        writerPackage.getFileWriter().write(String.format(Locale.CHINESE, "%s=%s\n", toPersistentPackage.getErrorCode(), toPersistentPackage.getTranslate()));
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
+                }
+            }
+        }
+
+        public void onAddElement() {
+            if (parking) {
+                LockSupport.unpark(this);
+                parking = false;
             }
         }
     }
@@ -106,5 +121,6 @@ public class TranslateAsyncPersistent {
 
     public static void submit(LanguageConfiguration configuration, String errorCode, String translate) {
         persistentQueue.add(new ToPersistentPackage(configuration, errorCode, translate));
+        runner.onAddElement();
     }
 }

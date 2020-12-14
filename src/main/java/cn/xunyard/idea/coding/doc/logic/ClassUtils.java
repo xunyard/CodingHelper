@@ -124,6 +124,7 @@ public class ClassUtils {
 
     public static boolean isBasicType(String fullClassName) {
         switch (fullClassName) {
+            case "java.lang.Class":
             case "java.lang.Object":
             case "java.lang.Boolean":
             case "java.lang.Byte":

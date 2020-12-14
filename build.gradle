@@ -4,9 +4,9 @@ plugins {
 }
 
 group 'cn.xunyard'
-version '2.2020.4'
+version '2.2020.6'
 
-sourceCompatibility = 1.8
+sourceCompatibility = 11
 
 repositories {
     mavenCentral()
@@ -16,12 +16,12 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 //     compile 'com.thoughtworks.qdox:qdox:2.0-M10'
     compileOnly 'io.swagger:swagger-annotations:1.5.14'
-    compileOnly('org.projectlombok:lombok:1.18.2')
-    annotationProcessor('org.projectlombok:lombok:1.18.2')
+    compileOnly('org.projectlombok:lombok:1.18.4')
+    annotationProcessor('org.projectlombok:lombok:1.18.4')
 }
 
 intellij {
-    version '2020.2'
+    version '2020.3'
     plugins 'java'
 }
 
