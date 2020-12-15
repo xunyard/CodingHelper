@@ -1,8 +1,11 @@
-package cn.xunyard.idea.coding.doc.extend.preset.javadoc
+package cn.xunyard.idea.coding.doc.model.extend.preset.javadoc
 
-import cn.xunyard.idea.coding.doc.extend.JavaDocExtend
-import cn.xunyard.idea.coding.doc.extend.JavaDocTagExtend
-import com.thoughtworks.qdox.model.*
+import cn.xunyard.idea.coding.doc.model.extend.JavaDocExtend
+import cn.xunyard.idea.coding.doc.model.extend.JavaDocTagExtend
+import com.thoughtworks.qdox.model.JavaAnnotatedElement
+import com.thoughtworks.qdox.model.JavaClass
+import com.thoughtworks.qdox.model.JavaField
+import com.thoughtworks.qdox.model.JavaMethod
 
 /**
  *

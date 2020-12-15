@@ -2,14 +2,8 @@ package cn.xunyard.idea.coding.doc.dialog
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.ui.layout.CCFlags
-import com.intellij.ui.layout.LCFlags
 import com.intellij.ui.layout.panel
-import com.intellij.uiDesigner.core.GridLayoutManager
 import javax.swing.JComponent
-import javax.swing.JPasswordField
-import javax.swing.JTextArea
-import javax.swing.JTextField
 
 /**
  *
@@ -39,6 +33,13 @@ class DocDynamicDialog constructor(
                     radioButton("234").constraints(growX)
                     label("").constraints(growX)
                 }
+                cell(isVerticalFlow = true) {
+                    button("Accept Yours") {}.constraints(growX)
+                    button("Accept Theirs") {}.constraints(growX)
+                    button("Merge ...") {}.constraints(growX)
+                    radioButton("234").constraints(growX)
+                    label("").constraints(growX)
+                 }
                 cell(isVerticalFlow = true) {
                     button("Accept Yours") {}.constraints(growX)
                     button("Accept Theirs") {}.constraints(growX)

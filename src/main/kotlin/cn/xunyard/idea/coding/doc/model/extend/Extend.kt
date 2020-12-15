@@ -1,4 +1,4 @@
-package cn.xunyard.idea.coding.doc.extend
+package cn.xunyard.idea.coding.doc.model.extend
 
 /**
  * 文档扩展的核心对象符号

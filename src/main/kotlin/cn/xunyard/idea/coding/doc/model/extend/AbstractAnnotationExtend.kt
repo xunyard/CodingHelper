@@ -1,4 +1,4 @@
-package cn.xunyard.idea.coding.doc.extend
+package cn.xunyard.idea.coding.doc.model.extend
 
 import com.thoughtworks.qdox.model.JavaAnnotation
 import com.thoughtworks.qdox.model.expression.AnnotationValue

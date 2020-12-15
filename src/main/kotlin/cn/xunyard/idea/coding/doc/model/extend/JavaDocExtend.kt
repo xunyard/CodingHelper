@@ -1,6 +1,6 @@
-package cn.xunyard.idea.coding.doc.extend
+package cn.xunyard.idea.coding.doc.model.extend
 
-import cn.xunyard.idea.coding.doc.extend.preset.javadoc.JavaDocKind
+import cn.xunyard.idea.coding.doc.model.extend.preset.javadoc.JavaDocKind
 
 /**
  * Java文档符号

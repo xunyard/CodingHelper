@@ -1,12 +1,8 @@
-package cn.xunyard.idea.coding.doc.extend
+package cn.xunyard.idea.coding.doc.model.extend
 
-import cn.xunyard.idea.coding.doc.extend.preset.annotation.DynamicAnnotation
+import cn.xunyard.idea.coding.doc.model.extend.preset.annotation.DynamicAnnotation
 import com.intellij.openapi.diagnostic.Logger
-import com.thoughtworks.qdox.model.JavaAnnotatedElement
 import com.thoughtworks.qdox.model.JavaAnnotation
-import com.thoughtworks.qdox.model.impl.DefaultJavaAnnotation
-import com.thoughtworks.qdox.model.impl.DefaultJavaClass
-import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.isSubclassOf

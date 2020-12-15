@@ -1,6 +1,6 @@
-package cn.xunyard.idea.coding.doc.extend.preset.annotation
+package cn.xunyard.idea.coding.doc.model.extend.preset.annotation
 
-import cn.xunyard.idea.coding.doc.extend.AbstractAnnotationExtend
+import cn.xunyard.idea.coding.doc.model.extend.AbstractAnnotationExtend
 import com.thoughtworks.qdox.model.JavaAnnotation
 
 /**
