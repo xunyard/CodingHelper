@@ -9,12 +9,21 @@
     <!-- Product and plugin compatibility requirements -->
     <!-- https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="org.jetbrains.plugins.template.services.MyApplicationService"/>
         <projectService serviceImplementation="org.jetbrains.plugins.template.services.MyProjectService"/>
         <toolWindow id="Coding Helper" anchor="bottom" canCloseContents="true" doNotActivateOnStart="true"
                     factoryClass="cn.xunyard.idea.coding.log.window.LogToolWindowFactory"/>
+        <localInspection language="JAVA"
+                         displayName="I18n: error code without target translate"
+                         groupBundle="messages.InspectionsBundle"
+                         groupKey="group.names.internationalization.issues"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="cn.xunyard.idea.coding.i18n.inspection.ErrorCodeWithoutTranslateInspection"
+                         />
     </extensions>
 
     <actions>
@@ -24,6 +33,11 @@
             <action id="cn.xunyard.doc" class="cn.xunyard.idea.coding.doc.action.DocumentBuildingAction"
                     text="Build Service Document"
                     description="A simple tool for service document building.">
+            </action>
+
+            <action id="cn.xunyard.i18n" class="cn.xunyard.idea.coding.i18n.action.I18nSettingsAction"
+                    text="I18n Settings"
+                    description="A simple tool for error translate inspection of i18n.">
             </action>
         </group>
     </actions>

@@ -1,4 +1,3 @@
-import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.changelog.closure
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -7,15 +6,15 @@ plugins {
     // Java support
     id("java")
     // Kotlin support
-    id("org.jetbrains.kotlin.jvm") version "1.3.70"
+    id("org.jetbrains.kotlin.jvm") version "1.4.0"
     // gradle-intellij-plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
-    id("org.jetbrains.intellij") version "0.4.22"
+    id("org.jetbrains.intellij") version "0.6.5"
     // gradle-changelog-plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
-    id("org.jetbrains.changelog") version "0.5.0"
+    id("org.jetbrains.changelog") version "0.6.2"
     // detekt linter - read more: https://detekt.github.io/detekt/gradle.html
-    id("io.gitlab.arturbosch.detekt") version "1.13.1"
+//    id("io.gitlab.arturbosch.detekt") version "1.13.1"
     // ktlint linter - read more: https://github.com/JLLeitschuh/ktlint-gradle
-    id("org.jlleitschuh.gradle.ktlint") version "9.4.0"
+//    id("org.jlleitschuh.gradle.ktlint") version "9.4.0"
 }
 
 // Import variables from gradle.properties file
@@ -40,7 +39,7 @@ repositories {
     jcenter()
 }
 dependencies {
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.13.1")
+//    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.13.1")
 }
 
 // Configure gradle-intellij-plugin plugin.
@@ -55,37 +54,56 @@ intellij {
 //  Plugin Dependencies:
 //  https://www.jetbrains.org/intellij/sdk/docs/basics/plugin_structure/plugin_dependencies.html
 //
-//  setPlugins("java")
+  setPlugins("java")
 }
 
 // Configure detekt plugin.
 // Read more: https://detekt.github.io/detekt/kotlindsl.html
-detekt {
-    config = files("./detekt-config.yml")
-    buildUponDefaultConfig = true
+//detekt {
+//    config = files("./detekt-config.yml")
+//    buildUponDefaultConfig = true
+//
+//    reports {
+//        html.enabled = false
+//        xml.enabled = false
+//        txt.enabled = false
+//    }
+//}
 
-    reports {
-        html.enabled = false
-        xml.enabled = false
-        txt.enabled = false
-    }
-}
+//java {
+//    sourceCompatibility = JavaVersion.VERSION_11
+//    targetCompatibility = JavaVersion.VERSION_11
+//}
+
+//sourceSets {
+//    main {
+//        withConvention(org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet::class) {
+//            listOf(java, kotlin).forEach { it.srcDirs("src") }
+//        }
+//    }
+////
+////    test {
+////        withConvention(org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet::class) {
+////            listOf(java, kotlin).forEach { it.srcDirs("test") }
+////        }
+////    }
+//}
 
 tasks {
     // Set the compatibility versions to 1.8
     withType<JavaCompile> {
-        sourceCompatibility = "1.8"
-        targetCompatibility = "1.8"
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
     }
     listOf("compileKotlin", "compileTestKotlin").forEach {
         getByName<KotlinCompile>(it) {
-            kotlinOptions.jvmTarget = "1.8"
+            kotlinOptions.jvmTarget = "11"
         }
     }
 
-    withType<Detekt> {
-        jvmTarget = "1.8"
-    }
+//    withType<Detekt> {
+//        jvmTarget = "11"
+//    }
 
     patchPluginXml {
         version(pluginVersion)

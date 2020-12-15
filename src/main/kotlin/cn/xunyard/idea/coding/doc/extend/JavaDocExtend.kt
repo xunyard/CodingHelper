@@ -1,7 +1,6 @@
 package cn.xunyard.idea.coding.doc.extend
 
 import cn.xunyard.idea.coding.doc.extend.preset.javadoc.JavaDocKind
-import com.thoughtworks.qdox.model.JavaAnnotatedElement
 
 /**
  * Java文档符号
