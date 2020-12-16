@@ -42,8 +42,13 @@ class SingleLanguageTranslateImpl(
         }
     }
 
+    @Synchronized
+    override fun free() {
+        translateMap.clear()
+    }
+
     override fun missing(errorCode: String): Boolean {
-        return translateMap.containsKey(errorCode)
+        return !translateMap.containsKey(errorCode)
     }
 
     override fun getTranslate(errorCode: String): String? {

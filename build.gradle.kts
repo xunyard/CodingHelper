@@ -70,10 +70,12 @@ intellij {
 //    }
 //}
 
-//java {
-//    sourceCompatibility = JavaVersion.VERSION_11
-//    targetCompatibility = JavaVersion.VERSION_11
-//}
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+
 
 //sourceSets {
 //    main {
@@ -91,10 +93,10 @@ intellij {
 
 tasks {
     // Set the compatibility versions to 1.8
-    withType<JavaCompile> {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
-    }
+//    withType<JavaCompile> {
+//        sourceCompatibility = "1.8"
+//        targetCompatibility = "1.8"
+//    }
     listOf("compileKotlin", "compileTestKotlin").forEach {
         getByName<KotlinCompile>(it) {
             kotlinOptions.jvmTarget = "11"

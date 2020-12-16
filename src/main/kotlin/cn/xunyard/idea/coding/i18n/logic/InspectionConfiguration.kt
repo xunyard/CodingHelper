@@ -12,13 +12,9 @@ data class InspectionConfiguration(
         return this.languageConfigMap
     }
 
-    /**
-     * 获得配置用的语言项
-     *
-     * @return 语言配置项
-     */
-    fun getLanguages(): Set<String> {
-        return HashSet(languageConfigMap.values)
+    fun refreshAll(new: Map<String, String>) {
+        languageConfigMap.clear()
+        languageConfigMap.putAll(new)
     }
 
     /**

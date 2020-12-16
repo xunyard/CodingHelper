@@ -19,7 +19,9 @@ import javax.swing.JScrollPane
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
  * @date 2020-01-07
  */
-class BindingListWithAdd<T>(setter: Consumer<List<T>>?) : JPanel() {
+class BindingListWithAdd<T> constructor(
+        setter: Consumer<List<T>>?
+) : JPanel() {
     private lateinit var scrollPane: JScrollPane
     private lateinit var jbList: JBList<T>
     private lateinit var buttonPanel: JPanel

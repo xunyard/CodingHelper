@@ -42,7 +42,7 @@ public class SettingTutorial {
         return wholePanel;
     }
 
-    public List<SingleLanguageConfiguration> getLanguageConfiguration() {
+    public List<SingleLanguageConfiguration> getLanguageConfigurations() {
         return this.selectTool.getListData();
     }
 }

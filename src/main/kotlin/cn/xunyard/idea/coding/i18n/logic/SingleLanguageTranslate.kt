@@ -4,7 +4,7 @@ package cn.xunyard.idea.coding.i18n.logic
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
  * @date 2020-01-11
  */
-interface SingleLanguageTranslate: SingleLanguageReloadable {
+interface SingleLanguageTranslate: SingleLanguageLifeControl {
     /**
      * 判断错误码是否缺少翻译
      *

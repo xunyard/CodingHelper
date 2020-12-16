@@ -50,13 +50,12 @@ object ObjectUtils {
     }
 
     fun removeQuotation(str: String): String {
-        var str = str
         if (isEmpty(str)) {
             return str
         }
-        str = str.trim { it <= ' ' }
-        return if (str.startsWith("\"")) {
-            str.substring(1, str.length - 1)
-        } else str
+        val trim = str.trim { it <= ' ' }
+        return if (trim.startsWith("\"")) {
+            trim.substring(1, str.length - 1)
+        } else trim
     }
 }

@@ -12,17 +12,18 @@ import javax.swing.JComponent
  * @date 2020-01-12
  */
 class SettingTutorialDialogWrapper(private val project: Project) : DialogWrapper(false) {
-    private var settingTutorial: SettingTutorial? = null
-    protected override fun createCenterPanel(): JComponent {
+    private lateinit var settingTutorial: SettingTutorial
+    override fun createCenterPanel(): JComponent {
         settingTutorial = SettingTutorial()
         val configMap: Map<String, String> = TranslateProcessContext.getInstance(project).inspectionConfiguration.getAll()
-
-        return settingTutorial!!.createPanel(project, configMap.toConfigList(), configMap)
+        return settingTutorial.createPanel(project, configMap.toConfigList(), configMap)
     }
 
-    protected override fun doOKAction() {
-        val languageConfiguration = settingTutorial!!.languageConfiguration
-        TranslateProcessContext.getInstance(project).inspectionConfiguration.getLanguages()
+    override fun doOKAction() {
+        val languageConfigurations: List<SingleLanguageConfiguration> = settingTutorial.languageConfigurations
+        val new = languageConfigurations.stream()
+                .collect(Collectors.toMap({ cfg -> cfg.language }, { cfg -> cfg.filepath }))
+        TranslateProcessContext.getInstance(project).inspectionConfiguration.refreshAll(new)
         TranslateProcessContext.getInstance(project).getLanguageManager().reload()
         super.doOKAction()
     }

@@ -31,21 +31,21 @@ class DocDynamicDialog constructor(
                     button("Accept Theirs") {}.constraints(growX)
                     button("Merge ...") {}.constraints(growX)
                     radioButton("234").constraints(growX)
-                    label("").constraints(growX)
+                    label("234").constraints(growX)
                 }
                 cell(isVerticalFlow = true) {
                     button("Accept Yours") {}.constraints(growX)
                     button("Accept Theirs") {}.constraints(growX)
                     button("Merge ...") {}.constraints(growX)
                     radioButton("234").constraints(growX)
-                    label("").constraints(growX)
+                    label("43").constraints(growX)
                  }
                 cell(isVerticalFlow = true) {
                     button("Accept Yours") {}.constraints(growX)
                     button("Accept Theirs") {}.constraints(growX)
                     button("Merge ...") {}.constraints(growX)
                     radioButton("234").constraints(growX)
-                    label("").constraints(growX)
+                    label("23452").constraints(growX)
                 }
             }
         }

@@ -36,7 +36,7 @@ class AddTranslate constructor(
         val panel = Panel(layout)
         var i = 0
         for (language in translateProvider.getLanguages()) {
-            addSingleTranslate(panel, i++, language, { translate: String? -> translateProvider.setTranslate(language, errorCode, translate!!) },
+            addSingleTranslate(panel, i++, language, { translate: String -> translateProvider.setTranslate(language, errorCode, translate) },
                     translateProvider.getTranslate(language, errorCode))
         }
         panel.preferredSize = Dimension(400, 35 * i)

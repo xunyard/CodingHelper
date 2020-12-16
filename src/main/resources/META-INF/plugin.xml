@@ -13,11 +13,12 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="org.jetbrains.plugins.template.services.MyApplicationService"/>
-        <projectService serviceImplementation="org.jetbrains.plugins.template.services.MyProjectService"/>
+        <projectService serviceImplementation="cn.xunyard.idea.coding.i18n.I18nInspectionSettings"/>
         <toolWindow id="Coding Helper" anchor="bottom" canCloseContents="true" doNotActivateOnStart="true"
                     factoryClass="cn.xunyard.idea.coding.log.window.LogToolWindowFactory"/>
         <localInspection language="JAVA"
                          displayName="I18n: error code without target translate"
+                         groupPath="Java"
                          groupBundle="messages.InspectionsBundle"
                          groupKey="group.names.internationalization.issues"
                          enabledByDefault="true"

@@ -33,11 +33,14 @@ class LanguageManagerImpl constructor(
         val toReplace: MutableMap<String, SingleLanguageTranslate> = HashMap()
         for ((language, filepath) in inspectionConfiguration.getAll()) {
             if (translateMap.containsKey(language)) {
-                translateMap[language]!!.reload(filepath)
+                val languageTranslate = translateMap[language]!!.apply { this.reload(filepath) }
+                toReplace[language] = languageTranslate
+                translateMap.remove(language)
             } else {
                 toReplace[language] = createSingleLanguageTranslate(language, filepath)
             }
         }
+        translateMap.values.forEach { it.free()}
         translateMap.clear()
         translateMap.putAll(toReplace)
     }
