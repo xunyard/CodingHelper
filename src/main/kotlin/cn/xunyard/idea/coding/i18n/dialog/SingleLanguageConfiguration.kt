@@ -14,4 +14,8 @@ data class SingleLanguageConfiguration(
          * 翻译文件路径
          */
         val filepath: String,
-)
+) {
+    override fun toString(): String {
+        return "$language:$filepath"
+    }
+}

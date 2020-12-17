@@ -49,7 +49,7 @@
                 <action id="cn.xunyard.i18n.reload" class="cn.xunyard.idea.coding.i18n.action.I18nReloadFromDisk"
                         text="I18n Reload From Disk"
                         description="Reload all translate from disk using config"/>
-                <action id="cn.xunyard.i18n.scan-all" class="cn.xunyard.idea.coding.i18n.action.I18nScanAllFiles"
+                <action id="cn.xunyard.i18n.scan-all" class="cn.xunyard.idea.coding.i18n.action.I18nScanWholeProject"
                         text="I18n Scan Whole Project"
                         description="Scan all files of project for i18n check"/>
             </group>
