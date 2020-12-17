@@ -1,6 +1,6 @@
 package cn.xunyard.idea.coding.i18n.inspection
 
-import cn.xunyard.idea.coding.i18n.logic.TranslateProcessContext
+import cn.xunyard.idea.coding.i18n.TranslateProcessContext
 import com.intellij.codeInspection.AbstractBaseJavaLocalInspectionTool
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
@@ -12,5 +12,9 @@ import com.intellij.psi.PsiElementVisitor
 class ErrorCodeWithoutTranslateInspection : AbstractBaseJavaLocalInspectionTool() {
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
         return InspectionPsiElementVisitor(holder, TranslateProcessContext.getInstance(holder.project).getTranslateProvider())
+    }
+
+    companion object {
+        const val displayName = "ErrorCodeWithoutTranslate"
     }
 }

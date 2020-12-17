@@ -1,6 +1,6 @@
 package cn.xunyard.idea.coding.i18n.dialog
 
-import cn.xunyard.idea.coding.i18n.logic.TranslateProcessContext
+import cn.xunyard.idea.coding.i18n.TranslateProcessContext
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import java.util.*

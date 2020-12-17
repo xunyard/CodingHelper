@@ -1,10 +1,10 @@
-package cn.xunyard.idea.coding.i18n.logic
+package cn.xunyard.idea.coding.i18n
 
-import cn.xunyard.idea.coding.i18n.I18nInspectionSettings
+import cn.xunyard.idea.coding.i18n.logic.LanguageManager
+import cn.xunyard.idea.coding.i18n.logic.LanguageTranslateProvider
 import cn.xunyard.idea.coding.i18n.logic.impl.LanguageManagerImpl
 import com.intellij.openapi.project.Project
 import java.util.*
-import kotlin.collections.HashMap
 
 /**
  * @author <a herf="mailto:wuqi@terminus.io">xunyard</a>
@@ -33,7 +33,7 @@ class TranslateProcessContext(
             } else {
                 var configuration: InspectionConfiguration? = I18nInspectionSettings.getInstance(project).state
                 if (configuration == null) {
-                    configuration = InspectionConfiguration(HashMap())
+                    configuration = InspectionConfiguration()
                     I18nInspectionSettings.getInstance(project).loadState(configuration)
                 }
 

@@ -1,7 +1,6 @@
 package cn.xunyard.idea.coding.i18n.dialog;
 
 import cn.xunyard.idea.coding.dialog.BindingListWithAdd;
-import cn.xunyard.idea.coding.i18n.logic.InspectionConfiguration;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 

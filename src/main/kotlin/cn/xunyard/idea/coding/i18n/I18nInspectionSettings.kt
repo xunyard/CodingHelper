@@ -1,6 +1,5 @@
 package cn.xunyard.idea.coding.i18n
 
-import cn.xunyard.idea.coding.i18n.logic.InspectionConfiguration
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 

@@ -1,7 +1,7 @@
 package cn.xunyard.idea.coding.i18n.inspection
 
-import cn.xunyard.idea.coding.i18n.logic.InspectionUtils
 import cn.xunyard.idea.coding.i18n.logic.LanguageTranslateProvider
+import cn.xunyard.idea.coding.i18n.utils.InspectionUtils
 import cn.xunyard.idea.coding.util.AssertUtils
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.*

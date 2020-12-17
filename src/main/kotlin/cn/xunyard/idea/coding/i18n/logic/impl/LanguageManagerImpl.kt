@@ -1,7 +1,10 @@
 package cn.xunyard.idea.coding.i18n.logic.impl
 
-import cn.xunyard.idea.coding.i18n.logic.*
-import java.util.HashMap
+import cn.xunyard.idea.coding.i18n.InspectionConfiguration
+import cn.xunyard.idea.coding.i18n.logic.LanguageManager
+import cn.xunyard.idea.coding.i18n.logic.LanguageTranslateProvider
+import cn.xunyard.idea.coding.i18n.logic.SingleLanguageTranslate
+import java.util.*
 
 /**
  *
@@ -9,8 +12,8 @@ import java.util.HashMap
  * @date 2020-12-15
  */
 class LanguageManagerImpl constructor(
-        private val inspectionConfiguration: InspectionConfiguration
-) : LanguageManager, LanguageTranslateProvider {
+    private val inspectionConfiguration: InspectionConfiguration
+) : AbstractTranslateFileEnhance(), LanguageManager, LanguageTranslateProvider {
     private val translateMap: MutableMap<String, SingleLanguageTranslate> = HashMap()
 
     init {
@@ -23,7 +26,7 @@ class LanguageManagerImpl constructor(
             throw RuntimeException("language load should only invoke once!")
         }
 
-        for ((language, filepath) in inspectionConfiguration.getAll()) {
+        for ((language, filepath) in inspectionConfiguration.all) {
             translateMap[language] = createSingleLanguageTranslate(language, filepath)
         }
     }
@@ -31,7 +34,7 @@ class LanguageManagerImpl constructor(
     @Synchronized
     override fun reload() {
         val toReplace: MutableMap<String, SingleLanguageTranslate> = HashMap()
-        for ((language, filepath) in inspectionConfiguration.getAll()) {
+        for ((language, filepath) in inspectionConfiguration.all) {
             if (translateMap.containsKey(language)) {
                 val languageTranslate = translateMap[language]!!.apply { this.reload(filepath) }
                 toReplace[language] = languageTranslate
@@ -40,7 +43,7 @@ class LanguageManagerImpl constructor(
                 toReplace[language] = createSingleLanguageTranslate(language, filepath)
             }
         }
-        translateMap.values.forEach { it.free()}
+        translateMap.values.forEach { it.free() }
         translateMap.clear()
         translateMap.putAll(toReplace)
     }
@@ -73,5 +76,5 @@ class LanguageManagerImpl constructor(
     }
 
     private fun createSingleLanguageTranslate(language: String, filepath: String) =
-            SingleLanguageTranslateImpl(language, filepath)
+        SingleLanguageTranslateImpl(language, filepath).apply { reload(filepath) }
 }

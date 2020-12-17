@@ -54,7 +54,7 @@ intellij {
 //  Plugin Dependencies:
 //  https://www.jetbrains.org/intellij/sdk/docs/basics/plugin_structure/plugin_dependencies.html
 //
-  setPlugins("java")
+    setPlugins("java")
 }
 
 // Configure detekt plugin.
@@ -76,27 +76,8 @@ java {
 }
 
 
-
-//sourceSets {
-//    main {
-//        withConvention(org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet::class) {
-//            listOf(java, kotlin).forEach { it.srcDirs("src") }
-//        }
-//    }
-////
-////    test {
-////        withConvention(org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet::class) {
-////            listOf(java, kotlin).forEach { it.srcDirs("test") }
-////        }
-////    }
-//}
-
 tasks {
-    // Set the compatibility versions to 1.8
-//    withType<JavaCompile> {
-//        sourceCompatibility = "1.8"
-//        targetCompatibility = "1.8"
-//    }
+
     listOf("compileKotlin", "compileTestKotlin").forEach {
         getByName<KotlinCompile>(it) {
             kotlinOptions.jvmTarget = "11"
@@ -106,6 +87,10 @@ tasks {
 //    withType<Detekt> {
 //        jvmTarget = "11"
 //    }
+
+    buildSearchableOptions {
+        enabled = false
+    }
 
     patchPluginXml {
         version(pluginVersion)

@@ -1,4 +1,4 @@
-package cn.xunyard.idea.coding.i18n.logic
+package cn.xunyard.idea.coding.i18n.utils
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiLiteralExpression

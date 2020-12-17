@@ -1,7 +1,6 @@
 package cn.xunyard.idea.coding.i18n.logic.impl
 
 import cn.xunyard.idea.coding.i18n.logic.SingleLanguageTranslate
-import cn.xunyard.idea.coding.i18n.logic.persistent.TranslateAsyncPersistent
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -31,9 +30,9 @@ class SingleLanguageTranslateImpl(
             }
             FileReader(file).use { fileReader ->
                 BufferedReader(fileReader).use { reader ->
-                    var str: String
+                    var str: String?
                     while (reader.readLine().also { str = it } != null) {
-                        val property = str.split("=")
+                        val property = str!!.split("=")
                         translateMap[property[0]] = property[1]
                     }
                 }
@@ -57,7 +56,12 @@ class SingleLanguageTranslateImpl(
     }
 
     override fun setTranslate(errorCode: String, translate: String) {
+        val exist = translateMap[errorCode]
+        if (exist != null && exist == translate) {
+            return
+        }
+
         translateMap[errorCode] = translate
-        TranslateAsyncPersistent.submit(filepath, errorCode, translate)
+        AsyncTranslatePersist.submit(filepath, errorCode, translate)
     }
 }
