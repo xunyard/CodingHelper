@@ -25,7 +25,6 @@ class DocDynamicDialog constructor(
             }
             row {
                 scrollPane(DocumentSettings()).constraints(pushX)
-
                 cell(isVerticalFlow = true) {
                     button("Accept Yours") {}.constraints(growX)
                     button("Accept Theirs") {}.constraints(growX)

@@ -1,13 +1,14 @@
 package cn.xunyard.idea.coding.i18n.dialog
 
-import cn.xunyard.idea.coding.dialog.BindingTextField
+import cn.xunyard.idea.coding.dialog.BindingJTextField
 import cn.xunyard.idea.coding.i18n.logic.LanguageTranslateProvider
 import cn.xunyard.idea.coding.util.AssertUtils.isEmpty
 import com.intellij.openapi.ui.VerticalFlowLayout
 import com.intellij.util.ui.JBUI
 import java.awt.*
+import java.awt.event.FocusEvent
+import java.awt.event.FocusListener
 import java.util.*
-import java.util.function.Consumer
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextField
@@ -49,24 +50,17 @@ class AddTranslate constructor(
     private fun addSingleTranslate(container: Panel,
                                    index: Int,
                                    language: String,
-                                   setter: Consumer<String>,
+                                   setter: (String) -> Unit,
                                    translate: String?) {
+
         val languageConstraints = GridBagConstraints(0, index, 1, 1,
                 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, JBUI.insets(0), 0, 0)
         container.add(JLabel(language), languageConstraints)
         val translateConstraints = GridBagConstraints(1, index, 1, 1,
                 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, JBUI.insets(0), 0, 0)
-        val textField = BindingTextField.BindingTextFieldBuilder.from(setter)
-                .text(translate)
-                .build()
-        if (!isEmpty(translate)) {
-            textField.isEnabled = false
-            textField.toolTipText = "已设置的翻译，禁止在此编辑"
-        } else if (!focused) {
-            textField.requestFocus(true)
-            focused = true
-        }
-        textField.preferredSize = Dimension(290, 35)
+
+        val textField = BindingJTextField({ str -> setter.invoke(str!!) } , { translate}, !isEmpty(translate))
+
         jTextFieldList.add(textField)
         container.add(textField, translateConstraints)
     }

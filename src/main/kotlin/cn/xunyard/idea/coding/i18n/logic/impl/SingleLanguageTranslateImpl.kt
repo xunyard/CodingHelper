@@ -1,6 +1,7 @@
 package cn.xunyard.idea.coding.i18n.logic.impl
 
 import cn.xunyard.idea.coding.i18n.logic.SingleLanguageTranslate
+import cn.xunyard.idea.coding.i18n.logic.persistent.TranslateAsyncPersistent
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -57,5 +58,6 @@ class SingleLanguageTranslateImpl(
 
     override fun setTranslate(errorCode: String, translate: String) {
         translateMap[errorCode] = translate
+        TranslateAsyncPersistent.submit(filepath, errorCode, translate)
     }
 }

@@ -27,6 +27,10 @@
                          />
     </extensions>
 
+    <extensionPoints>
+        <extensionPoint name="vfs.asyncListener" interface=""/>
+    </extensionPoints>
+
     <actions>
         <group id="cn.xunyard.coding.GroupActions" text="Coding Helper" popup="true">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
