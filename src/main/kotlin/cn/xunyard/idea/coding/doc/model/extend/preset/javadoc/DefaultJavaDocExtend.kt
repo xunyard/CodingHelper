@@ -3,9 +3,6 @@ package cn.xunyard.idea.coding.doc.model.extend.preset.javadoc
 import cn.xunyard.idea.coding.doc.model.extend.JavaDocExtend
 import cn.xunyard.idea.coding.doc.model.extend.JavaDocTagExtend
 import com.thoughtworks.qdox.model.JavaAnnotatedElement
-import com.thoughtworks.qdox.model.JavaClass
-import com.thoughtworks.qdox.model.JavaField
-import com.thoughtworks.qdox.model.JavaMethod
 
 /**
  *
@@ -13,26 +10,10 @@ import com.thoughtworks.qdox.model.JavaMethod
  * @date 2020-10-02
  */
 class DefaultJavaDocExtend constructor(
-        private val javaModel: JavaAnnotatedElement
+    javaModel: JavaAnnotatedElement
 ) : JavaDocExtend {
-    private val docKind: JavaDocKind
-    private val comment: String?
+    private val comment: String? = javaModel.comment
     private val tagMap = HashMap<String, JavaDocTagExtend>()
-
-    init {
-        docKind = when (javaModel) {
-            is JavaField -> JavaDocKind.FIELD
-            is JavaMethod -> JavaDocKind.METHOD
-            is JavaClass -> JavaDocKind.CLASS
-            else -> throw RuntimeException("invalid.model.type")
-        }
-
-        comment = javaModel.comment
-    }
-
-    override fun getDocKind(): JavaDocKind {
-        return docKind
-    }
 
     override fun getComment(): String? {
         return comment

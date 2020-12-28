@@ -17,5 +17,6 @@ class DocExtendTest : TestCase() {
         val clazz = DefaultJavaClass("io.swagger.annotations.ApiModel")
         val annotation = DefaultJavaAnnotation(clazz)
         val annotationExtend = manager.constructFromAnnotation(annotation)
+        println(annotationExtend)
     }
 }

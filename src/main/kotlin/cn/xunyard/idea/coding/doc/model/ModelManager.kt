@@ -7,7 +7,6 @@ package cn.xunyard.idea.coding.doc.model
  */
 class ModelManager {
 
-
     fun register() {
 
     }

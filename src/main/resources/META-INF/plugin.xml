@@ -13,7 +13,7 @@
     <depends>com.intellij.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="org.jetbrains.plugins.template.services.MyApplicationService"/>
+<!--        <applicationService serviceImplementation="org.jetbrains.plugins.template.services.MyApplicationService"/>-->
         <projectService serviceImplementation="cn.xunyard.idea.coding.i18n.I18nInspectionSettings"/>
         <toolWindow id="Coding Helper" anchor="bottom" canCloseContents="true" doNotActivateOnStart="true"
                     factoryClass="cn.xunyard.idea.coding.log.window.LogToolWindowFactory"/>

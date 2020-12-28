@@ -1,4 +1,4 @@
-package cn.xunyard.idea.coding.doc.render.template
+package cn.xunyard.idea.coding.doc.render
 
 import cn.xunyard.idea.coding.doc.model.extend.Extend
 import com.thoughtworks.qdox.model.JavaField

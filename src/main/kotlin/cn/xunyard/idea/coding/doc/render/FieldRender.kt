@@ -1,5 +1,6 @@
-package cn.xunyard.idea.coding.doc.render.template
+package cn.xunyard.idea.coding.doc.render
 
+import cn.xunyard.idea.coding.doc.model.FieldModel
 import cn.xunyard.idea.coding.doc.model.extend.Extend
 import com.thoughtworks.qdox.model.JavaField
 
@@ -10,5 +11,5 @@ import com.thoughtworks.qdox.model.JavaField
  */
 interface FieldRender {
 
-    fun provide(field: JavaField, extends: MutableSet<Extend>): String
+    fun provide(field: FieldModel, extends: MutableSet<Extend>): String
 }

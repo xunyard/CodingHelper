@@ -10,17 +10,12 @@ import cn.xunyard.idea.coding.doc.model.extend.preset.javadoc.JavaDocKind
 interface JavaDocExtend : Extend {
 
     /**
-     * 获取JavaDoc的作用类型
-     */
-    fun getDocKind(): JavaDocKind
-
-    /**
      * 获取JavaDoc描述的备注内容
      */
     fun getComment(): String?
 
     /**
-     * 获取系统所需要的JavaDoc内标签
+     * 获取JavaDoc内所有的标签
      */
     fun getTagMap(): MutableMap<String, JavaDocTagExtend>
 
