@@ -2,6 +2,7 @@ package cn.xunyard.idea.coding.doc.dialog
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.ui.layout.CCFlags
 import com.intellij.ui.layout.panel
 import javax.swing.JComponent
 
@@ -11,7 +12,7 @@ import javax.swing.JComponent
  * @date 2020-10-03
  */
 class DocDynamicDialog constructor(
-        private val project: Project?
+    private val project: Project?
 ) : DialogWrapper(project) {
 
     init {
@@ -38,14 +39,16 @@ class DocDynamicDialog constructor(
                     button("Merge ...") {}.constraints(growX)
                     radioButton("234").constraints(growX)
                     label("43").constraints(growX)
-                 }
-                cell(isVerticalFlow = true) {
-                    button("Accept Yours") {}.constraints(growX)
-                    button("Accept Theirs") {}.constraints(growX)
-                    button("Merge ...") {}.constraints(growX)
-                    radioButton("234").constraints(growX)
-                    label("23452").constraints(growX)
                 }
+                row {
+                    button("Accept Yours") {}.constraints(growY)
+                }
+                row {
+                    button("Accept Theirs") {}.constraints(growX)
+                }
+                button("Merge ...") {}.constraints(pushY)
+                radioButton("234").constraints(pushY)
+                label("23452").constraints(pushY)
             }
         }
     }

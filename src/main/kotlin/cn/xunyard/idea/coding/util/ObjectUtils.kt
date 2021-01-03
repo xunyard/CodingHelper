@@ -2,6 +2,7 @@ package cn.xunyard.idea.coding.util
 
 import cn.xunyard.idea.coding.util.AssertUtils.isEmpty
 import cn.xunyard.idea.coding.util.AssertUtils
+import com.google.common.base.Joiner
 import java.lang.StringBuilder
 import java.util.function.Function
 import java.util.function.Supplier
@@ -57,5 +58,11 @@ object ObjectUtils {
         return if (trim.startsWith("\"")) {
             trim.substring(1, str.length - 1)
         } else trim
+    }
+
+    private val semicolonJoiner = Joiner.on(";")
+
+    fun toSemicolonString(iterator: MutableIterable<*>): String {
+        return semicolonJoiner.join(iterator)
     }
 }
