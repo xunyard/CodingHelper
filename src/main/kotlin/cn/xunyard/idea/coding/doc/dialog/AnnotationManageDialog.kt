@@ -22,7 +22,7 @@ class AnnotationManageDialog(
     override fun createCenterPanel(): JComponent {
         val userField = JTextField("", 1)
         panel() {
-            row { userField().growPolicy() }
+//            row { userField().growPolicy() }
         }
 
 
