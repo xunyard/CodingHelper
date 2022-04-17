@@ -2,6 +2,7 @@ package cn.xunyard.idea.coding.doc.logic.render;
 
 import cn.xunyard.idea.coding.doc.logic.ProcessContext;
 import cn.xunyard.idea.coding.doc.logic.describer.MethodDescriber;
+import cn.xunyard.idea.coding.doc.logic.describer.ParameterDescriber;
 import cn.xunyard.idea.coding.doc.logic.describer.ServiceDescriber;
 import cn.xunyard.idea.coding.log.Logger;
 import cn.xunyard.idea.coding.log.LoggerFactory;
@@ -9,7 +10,10 @@ import cn.xunyard.idea.coding.util.AssertUtils;
 import com.google.common.base.Throwables;
 import lombok.RequiredArgsConstructor;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -52,7 +56,8 @@ public class DocumentRender {
     }
 
     /**
-     *  生成接口文档
+     * 生成接口文档
+     *
      * @param serviceIndex
      * @param fileWriter
      * @param serviceDescriber
@@ -77,6 +82,7 @@ public class DocumentRender {
 
     /**
      * 生成接口中方法文档
+     *
      * @param serviceIndex
      * @param serviceMethodIndex
      * @param fileWriter
@@ -101,8 +107,10 @@ public class DocumentRender {
         if (methodDescriber.hasParameter()) {
             fileWriter.write("#### " + serviceIndex + "." + serviceMethodIndex
                     + ".2 请求参数\n\n");
-            parameterRender.renderParameter(fileWriter, methodDescriber.getParameterList().iterator().next());
-            fileWriter.write("\n\n");
+            for (ParameterDescriber parameterDescriber : methodDescriber.getParameterList()) {
+                parameterRender.renderParameter(fileWriter, parameterDescriber);
+                fileWriter.write("\n\n");
+            }
         }
 
         if (methodDescriber.hasResponse()) {
