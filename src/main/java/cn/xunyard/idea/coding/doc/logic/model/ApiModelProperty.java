@@ -22,6 +22,7 @@ public class ApiModelProperty {
     private final String value;
     private final String note;
     private final Boolean required;
+    private final Boolean hidden;
 
     @Nullable
     public static ApiModelProperty fromJavaField(JavaField javaField) {
@@ -36,7 +37,7 @@ public class ApiModelProperty {
         String comment = javaField.getComment();
 
         if (!AssertUtils.isEmpty(comment)) {
-            return new ApiModelProperty(ObjectUtils.smoothStr(comment), null, false);
+            return new ApiModelProperty(ObjectUtils.smoothStr(comment), null, false, false);
         }
 
         return null;
@@ -56,6 +57,7 @@ public class ApiModelProperty {
 
         return new ApiModelProperty(value,
                 ObjectUtils.takeIfNonNull(annotation.getProperty("notes"), it -> ObjectUtils.removeQuotation(it.toString())),
-                ObjectUtils.takeBoolean(annotation.getProperty("required")));
+                ObjectUtils.takeBoolean(annotation.getProperty("required")),
+                ObjectUtils.takeBoolean(annotation.getProperty("hidden")));
     }
 }

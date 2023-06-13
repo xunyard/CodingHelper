@@ -176,12 +176,17 @@ public class ClassDescriberMaker {
 
             ApiModelProperty apiModelProperty = ApiModelProperty.fromJavaField(field);
 
+            // 如果字段指定了需要隐藏，不生成到文档里
+            if (apiModelProperty != null && apiModelProperty.getHidden()) {
+                continue;
+            }
+
             if (apiModelProperty == null) {
                 ServiceResolver.setResolveFail();
                 if (processContext.getConfiguration().isLogUnresolved()) {
                     log.error("[注释缺失] 属性: " + javaClass.getName() + "#" + field.getName() + " 未找到有效注解");
                 }
-                apiModelProperty = new ApiModelProperty(null, null, false);
+                apiModelProperty = new ApiModelProperty(null, null, false, false);
             }
             JavaClass fieldType = field.getType();
 
