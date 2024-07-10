@@ -4,7 +4,7 @@ plugins {
 }
 
 group  = "cn.xunyard"
-version = "2022.1.1"
+version = "2024.1"
 
 repositories {
     mavenCentral()
@@ -17,7 +17,7 @@ dependencies {
 }
 
 intellij {
-    version.set("2021.3.3")
+    version.set("2024.1")
     type.set("IC") // Target IDE Platform
 
     plugins.set(listOf("java"))
@@ -27,13 +27,13 @@ intellij {
 tasks {
     // Set the JVM compatibility versions
     withType<JavaCompile> {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
+        sourceCompatibility = "17"
+        targetCompatibility = "17"
     }
 
     patchPluginXml {
-        sinceBuild.set("213")
-        untilBuild.set("223.*")
+        sinceBuild.set("231")
+        untilBuild.set("241.*")
     }
 
     signPlugin {
