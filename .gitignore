@@ -25,3 +25,4 @@ atlassian-ide-plugin.xml
 application.properties
 _book/
 application.yml
+.intellijPlatform

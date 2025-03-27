@@ -1,28 +1,29 @@
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.10.0"
+    id("org.jetbrains.intellij.platform") version "2.4.0"
 }
 
-group  = "cn.xunyard"
-version = "2024.1"
+group = "cn.xunyard"
+version = "2024.2"
 
 repositories {
     mavenCentral()
+
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
 dependencies {
     compileOnly("io.swagger:swagger-annotations:1.6.5")
-    compileOnly("org.projectlombok:lombok:1.18.22")
-    annotationProcessor("org.projectlombok:lombok:1.18.22")
+    compileOnly("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
+
+    intellijPlatform {
+        intellijIdeaCommunity("2024.1")
+        bundledPlugin("com.intellij.java")
+    }
 }
-
-intellij {
-    version.set("2024.1")
-    type.set("IC") // Target IDE Platform
-
-    plugins.set(listOf("java"))
-}
-
 
 tasks {
     // Set the JVM compatibility versions
@@ -32,8 +33,8 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("231")
-        untilBuild.set("241.*")
+        sinceBuild.set("241")
+        untilBuild.set("251.*")
     }
 
     signPlugin {
